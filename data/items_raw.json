@@ -1,0 +1,611 @@
+[
+  {
+    "name": "Amulet of Amplified Emotion",
+    "item_type": "wondrous item",
+    "rarity": "uncommon",
+    "attunement": true,
+    "description": "While wearing this amulet, you are able to influence any creature who can meet your gaze, amplifying a specific emotion based on the color of the amulet's gemstone. A Wisdom saving throw is allowed against a DC11 to resist the effect.\n\nBlack - Nervous\n\nGray - Anxious\n\nViolet - Passionate\n\nBlue - Happy\n\nBlue Green - Relaxed\n\nGreen - Jealous\n\nAmber - Hatred"
+  },
+  {
+    "name": "Amulet of Fiendish Protection",
+    "item_type": "wondrous item",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "You are protected against the harmful effects of the innate powers of fiends. You gain advantage to saving throws against any spell cast against you by a fiend, and your AC increases by 4 when targeted by a fiend."
+  },
+  {
+    "name": "Amulet of Lycanthrope Protection",
+    "item_type": "wondrous item",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "You are immune to the curse of lycanthropy while wearing this amulet. If bitten while wearing the amulet, the curse does not take hold. However, if you are already cursed with lycanthropy, the amulet does not cure you of the affliction - instead, you do not succumb to the curse while wearing the amulet."
+  },
+  {
+    "name": "Boots of Deception",
+    "item_type": "wondrous item",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "These boots always appear distressed, as though having endured a lifetime of use, but never seem to rip or otherwise fall apart. While wearing these boots, you are able to magically silence or amplify your footsteps on any terrain. You are also able to choose whether or not your steps leave tracks on any terrain. This does not prevent you from being tracked by other means."
+  },
+  {
+    "name": "Boots of Stomping",
+    "item_type": "wondrous item",
+    "rarity": "uncommon",
+    "attunement": false,
+    "description": "These metal boots are sized to fit a medium sized creature, however, they can shrink or enlarge to accommodate any sized foot. While wearing these boots, you are able to deliver a stomping blow to any creature who is at least one size category smaller than you. This is a melee attack that deals 1d10 + Strength modifier bludgeoning damage. The attack is also considered magical."
+  },
+  {
+    "name": "Caltrops of Wounding",
+    "item_type": "wondrous item",
+    "rarity": "uncommon",
+    "attunement": false,
+    "description": "Damage dealt by these caltrops can only be healed by magical means."
+  },
+  {
+    "name": "Evergreen Cloak",
+    "item_type": "wondrous item",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "While wearing this cloak with its hood up, Wisdom (Perception) checks made to see you have disadvantage so long as you are in a wooded environment. In addition, you are able to assume the form of a evergreen tree. While in this form, you cannot move, but you heal through photosynthesis and nutrients found in the soil. Three hours as a tree can heal you to full health, as long as there is ample sunshine and rich soil. This ability cannot be used again until 24 hours have passed since its previous use."
+  },
+  {
+    "name": "Gown of Disguise",
+    "item_type": "wondrous item",
+    "rarity": "uncommon",
+    "attunement": false,
+    "description": "While wearing this gown, you can use an action to cast the disguise self spell from it at will. The spell ends if the gown is removed."
+  },
+  {
+    "name": "Headband of Martial Prowess",
+    "item_type": "wondrous item",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "While wearing this headband, you gain proficiency in martial weapons. If you already have proficiency in martial weapons, you gain a +2 to any attack while wielding them."
+  },
+  {
+    "name": "Horn of Bronze Dragon Control",
+    "item_type": "wondrous item",
+    "rarity": "very rare",
+    "attunement": false,
+    "description": "By using this horn, you are able to dominate the mind of any one bronze dragon within 60 feet of its activation. The dragon must be able to hear the horn to be dominated and it is allowed a Wisdom saving throw against DC16 to resist. If you or creatures that are friendly to you are fighting the target dragon, it is given advantage on the saving throw.\nOn a failed save, you can use your action to take total and precise control of the target. For the next hour, the creature only takes the actions you choose and cannot do anything that you don't allow. During this time, you can also cause the dragon to use a reaction, but this requires you to use your own reaction as well. Each time the dragon takes damage, it makes a new Wisdom saving throw against the horn's effect. If the saving throw succeeds, the effect ends. The older the dragon is, the more resistant to the horn's effect it is.\nWyrmling: +0 to the saving throw\nYoung: +1 to the saving throw\nAdult: +2 to the saving throw\nAncient: +3 to the saving throw"
+  },
+  {
+    "name": "Mask of Devil Control",
+    "item_type": "wondrous item",
+    "rarity": "legendary",
+    "attunement": true,
+    "description": "While wearing this mask, you are able to dominate the mind of any one fiend (devil) that is within 60 feet of your position and in your line of sight. The fiend (devil) must succeed on a Wisdom saving throw against DC20 or be charmed by you for the duration. If you or creatures that are friendly to you are fighting the target fiend (devil), it has advantage on the saving throw.\nOn a failed save, you can use your action to take total and precise control of the target. For the next hour, the fiend (devil) only takes the actions you choose and cannot do anything that you don't allow. During this time, you can also cause the fiend (devil) to use a reaction, but this requires you to use your own reaction as well. Each time the fiend (devil) takes damage, it makes a new Wisdom saving throw against the mask's effect. If the saving throw succeeds, the effect ends. The more powerful the fiend (devil) is, the greater it's chance to resist the mask's effect.\nLemure: +0 to the saving throw\nLesser Devils: +2 to the saving throw\nGreater Devils: +3 to the saving throw\nArchdevils: Immune"
+  },
+  {
+    "name": "Pipe of Controlling Winds",
+    "item_type": "wondrous item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "This pipe is usually crafted from a single piece of glass or blue-tinted ceramic. By placing the pipe to your lips and blowing out forcefully, you are able to create a large air elemental under your control that lasts for up to one hour. You cannot summon forth another elemental until 24 hours pass from its last activation. While you are in possession of the pipe, beings from the Elemental Plane of Air see you as friendly."
+  },
+  {
+    "name": "Quartermaster's Chest",
+    "item_type": "wondrous item",
+    "rarity": "legendary",
+    "attunement": false,
+    "description": "This chest is magically enchanted to bring forth arms and armaments meant to equip a platoon of soldiers quickly. Following the uttering its activation word and a hand placed on its closed lid, the chest will materialize two weapons for one weapon and one shield) and a suit of armor appropriate for your class and proficiency. If it materializes a ranged weapon, it will also provide 20 rounds of appropriate ammunition. The chest can be used a total of 50 times before its magic is exhausted. A period of 240 hours must pass before it can be used again. The weapons and armor provided are always expertly crafted, but they confer no magical bonuses to their wielders. The arms and armor conjured by the chest last for 72 hours, at which time they disappear into harmless mist. The arms and armor conjured can be any weapon or armor that has a cost of 50 gp or less."
+  },
+  {
+    "name": "Armor of Daylight's Embrace",
+    "item_type": "armor",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "Armor (leather), rare (requires attunement)\n\nWhile wearing this armor, you gain resistance to necrotic damage and are immune to the charm ability of vampires. Upon successfully grappling a vampire, you can activate the armor's special ability, dealing 20 radiant damage every round it is grappled with no save. Vampires receives a -2 to their ability check to escape the grapple while you are wearing this armor."
+  },
+  {
+    "name": "Armor of Increased Aptitude",
+    "item_type": "armor",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "Armor (plate), very rare (requires attunement)\n\nIn addition to the properties listed below, this armor grants a +2 to your armor class, as well as a +2 to all saving throws and ability checks. On your turn, by using an bonus action, you can activate one of the following abilities:\n\n\u2022 Increase your base speed by 30 feet for 4 rounds\n\u2022 Make one extra attack (as a reaction) every round for 4 rounds\n\u2022 Gain resistance to one damage type for 4 rounds\n\nOnce an ability is activated, another ability cannot be activated until you have finished a short or long rest."
+  },
+  {
+    "name": "Armor of Panicked Escape (Cursed)",
+    "item_type": "armor",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "Armor (half-plate), rare (requires attunement)\n\nThis armor functions as a suit of half-plate +2. However, following attunement, the curse becomes active and, when you engage in combat while wearing the suit, you must succeed in a Wisdom saving throw against a DC14. Failure results in you fleeing at your full base speed away from combat, possibly provoking an opportunity attack. A save is required anytime you use the Attack action while wearing the suit. The curse does not take effect until the suit is attuned to you. Once the armor is attuned, you cannot remove it unless a remove curse spell is cast on you first. The curse is only identifiable with the casting of a legend lore spell."
+  },
+  {
+    "name": "Armor of Retribution",
+    "item_type": "armor (plate)",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "Anytime you are subjected to melee damage while wearing this armor, your attacker takes an immediate 6 points of piercing damage. When you are struck with a critical strike in melee combat, you may have the armor reflect an equal amount of damage to that which you received back onto your attacker. This ability is useable once before finishing a long rest and must be declared by you after you are struck with a critical strike."
+  },
+  {
+    "name": "Eagle Eye Helm",
+    "item_type": "wondrous item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "While wearing this helm, and by using your Action, you are able to create a magical sensor that can appear anywhere above you up to a maximum of 400 feet. Through this, you can see from this vantage as if you were actually there, rotating your viewpoint 360 degrees. You perceive with your normal visual senses and cannot penetrate any solid surface, although your sight is unaffected by foliage and the like. You can summon the sensor for a total of 10 minutes before the magic winks out and cannot be used again until you finish a long rest."
+  },
+  {
+    "name": "Exo-Armor",
+    "item_type": "armor (plate)",
+    "rarity": "artifact",
+    "attunement": true,
+    "description": "Ages past, on the world of Shin'ar, during one of that planet's most turbulent times known as a Lunar Quickening, a human found himself stranded in a place where the fantastic seemed ordinary and magic was a more common occurrence than miracle. The man did not know how he came to the world, only that an experiment of his own, on his planet, went somehow awry. A stranger in a foreign land, he was forced to adapt to his new surroundings - thanks to his quick wit and superior intellect, he did just that and soon managed to gain employment in a village nearby."
+  },
+  {
+    "name": "Verr Jarn",
+    "item_type": "armor",
+    "rarity": "legendary",
+    "attunement": true,
+    "description": "The suit of plate mail armor was constructed specifically for Tony's height and build, however, it will fit anyone of Medium size. While he wore it defending the village, he was known as Verr Jarn, or 'Man of Iron'. This armor grants extraordinary abilities to anyone who dons it and manages to attune it, including +3 to your AC and increases to both your Strength and Dexterity ability scores by 4.\n\nIn addition, you gain advantage on any Strength and Dexterity saving throw or ability check. You are able to leap great distances, effectively able to cast the jump spell at will from the armor. Your base walking speed also increases by 30 feet while wearing this armor, and you are immune to fire and cold damage. However, you are vulnerable to electrical damage.\n\nIn addition, you can use the following abilities once a day:\n\u2022 When you miss with a melee weapon attack, you can instead choose to hit.\n\u2022 You can fly with of speed of 90 ft. You can sustain this flight for up to 8 rounds.\n\u2022 When you fail a saving throw or ability check, you can instead choose to succeed.\n\nWhile wearing the armor, you gain darkvision and truesight to a range of 60 feet. If you already have darkvision or truesight, its range is amplified by 30 feet."
+  },
+  {
+    "name": "Exo-Armor",
+    "item_type": "armor",
+    "rarity": "legendary",
+    "attunement": true,
+    "description": "You are able to cast the spells color spray and melf's acid arrow three times before a short or long rest while wearing the Exo-Armor. Both spells are cast as if using a 5th level spell slot.\n\nThe armor seems to never take any visible damage, regardless of the blow sustained while wearing it.\n\nAll of the suit's functions and abilities, with the exception of its increase in AC and ability scores, only work after the suit is attuned. The suit will only attune with someone of good (LG, NG, CG) alignment.\n\nDestroying the Armor. Attempts to destroy the armor have been made in the past. After Tony's death, the armor passed to his son, Steven, who went on to earn fame on other worlds as a hero and vanquisher of evil. Steven met his demise in Hades, where the armor was deemed too dangerous to exist and was tossed in the River Stix. The armor, however, remained. It floated down the river and eventually ended up in the hands of a powerful archon who bequeathed it to another hero. Down the line of great heroes it traveled, and many came to know the Man of Iron. The suit itself is impervious to damage and heals any cut, scratch, or ding it suffers within minutes. It has resisted acid, flame, and extreme cold.\n\nThe armor can only be destroyed by returning it to its planet of origin and bathing it in alchemical solutions that include copious amounts of a substance known as mana crystal. The formula was written by Tony and recorded in two places: his workbook, which has since been lost to time, and a letter to his son, Steven, which he wrote on his death bed. The letter is rumored to be among Steven's effects, left in his father's tower, which has remained magically sealed and warded for centuries with no apparent entry."
+  },
+  {
+    "name": "Helm of Ill Omen",
+    "item_type": "wondrous item",
+    "rarity": "uncommon",
+    "attunement": true,
+    "description": "While wearing this helm, you are able to affect the luck of those around you. Anytime a creature makes a saving throw, attack, or ability check within 20 feet of your position and in your line of sight, you can use your reaction and the magic of the helm to force the roll to be made at a disadvantage. You can do this a total of three times before a long rest, but must declare your intent to use the magic of the helm before the roll is made. A Wisdom saving throw against a DC13 is allowed to resist the effect."
+  },
+  {
+    "name": "Helm of Impaling",
+    "item_type": "wondrous item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "While wearing this helm, by speaking the command word, you are able to grow the spikes found on top of the helm by an additional three feet. You may use your Attack Action to attempt to impale a creature, dealing 4d6 piercing damage. The spikes remain elongated for 4 rounds, or until you dismiss them back to their normal length with a bonus action. You may elongate the spikes twice before a short or long rest."
+  },
+  {
+    "name": "Helm of the Hydra",
+    "item_type": "wondrous item",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "This powerful helm grants you the abilities of a hydra. While wearing the helm, you can hold your breath for up to one hour. If you sleep while wearing the helm, you gain the benefits of the alarm spell, causing the helm to wake you if a Tiny or larger creature comes within 30 feet of your position. In addition, you gain advantage on saving throws against being blinded, charmed, deafened, frightened, stunned, and knocked unconscious. You are also able to use your reaction to make 2 opportunity attacks instead of one anytime you are normally able to."
+  },
+  {
+    "name": "Shield of Frightful Presence",
+    "item_type": "armor (shield)",
+    "rarity": "uncommon",
+    "attunement": false,
+    "description": "While wielding this shield, you are able to use your Action to cause any creature within 20 feet who can see you to perform a Wisdom saving throw against a DC12. Failure of the save results in them gaining the frightened condition for 1d6 rounds. A successful save makes the creature immune to the shield's magic for 24 hours."
+  },
+  {
+    "name": "Shield of Radiant Glory",
+    "item_type": "armor (shield)",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "This shield is covered with depictions of victorious armies on the march around the sheathing face of a medusa which rests in the center. In addition to granting a +2 to your AC, the shield can be made to shine with bright light after combat ends, granting everyone who can see it hit points equal to 2 + their Constitution modifier (if any), as well as curing anyone suffering from petrification, so long as they were petrified by the gaze of a medusa. Creatures cannot gain more hit points than their maximum this way, and any excess healing is lost. This ability can be used once before a short or long rest. While wielding this shield, you are immune to the petrifying gaze of a medusa and gain a +2 to attack rolls and damage against them."
+  },
+  {
+    "name": "Cold Flame",
+    "item_type": "weapon (any sword)",
+    "rarity": "very rare",
+    "attunement": false,
+    "description": "You can use a bonus action to speak this magic sword's command word, causing blue flames to erupt from the blade. The flames shed no heat, instead radiating a bitter cold and shedding bright light over a 40 foot radius, with a dimmed light spread across an additional 40 feet. When you hit with an attack using this magic sword, the target takes an extra 2d4 cold damage. The flames last until you use another bonus action to speak the command word again, or the sword is dropped or sheathed."
+  },
+  {
+    "name": "Coral Greatsword of Underwater Combat",
+    "item_type": "weapon (Greatsword)",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "You gain a +2 bonus to attack and damage rolls made with this magical weapon. When you wield this weapon and are fully immersed in water, its special properties come to life. While you hold the drawn sword underwater, it creates a field surrounding you that grants you unimpeded movement. An impenetrable bubble of fresh air forms around your face and renews itself from the oxygen found in the water. Additionally, your swim speed increases by 20 feet."
+  },
+  {
+    "name": "Dagger of Toxic Absorption",
+    "item_type": "weapon (Dagger)",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "You gain a +1 bonus to attack and damage rolls made with this magic weapon. Additionally, the dagger can absorb any poison or toxin it touches for later use. The weapon stores the toxin for 24 hours and discharges it upon a successful critical strike. However, if 24 hours pass without the weapon expending the toxin, it is rendered inert and escapes the weapon's hilt as a faint mist."
+  },
+  {
+    "name": "Danthag's Razor",
+    "item_type": "Weapon (Battleaxe)",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "You gain a +1 bonus to attack and damage rolls made with this magical weapon. When you score a successful hit, you can use your bonus action to cause the wound to bleed. At the start of the affected creature's turn, it suffers an additional 4 points of slashing damage and receives a -1 on attack rolls. The bleeding and attack roll penalties continue until the creature is dead, reaches a maximum of -5 on its attack rolls, or is the creature is the recipient of healing magic. The weapon's ability can be used three times a day."
+  },
+  {
+    "name": "Darkstar Mace",
+    "item_type": "Weapon (Mace)",
+    "rarity": "legendary",
+    "attunement": true,
+    "description": "You gain a +2 bonus to attack and damage rolls made with this magical weapon. This mace is lighter than other weapons of similar make and seems to slightly bend the light surround it.\n\nWhile you hold the drawn weapon, you are protected by an invisible field that distorts space around you. Any ranged or melee attack made against you has a 20% chance to miss, and anytime a strike misses you, you may use your reaction to cause the strike to hit another target of your choice within its range. If there is no available target, nothing happens.\n\nYou may use your action to teleport to any location not occupied by another creature within 90 feet and in your line of sight. When you arrive in this space, your form is wavered and you gain immunity to slashing, bludgeoning, and piercing damage on your next turn. You can use this ability once a day."
+  },
+  {
+    "name": "Devastator",
+    "item_type": "weapon (warhammer)",
+    "rarity": "legendary",
+    "attunement": true,
+    "description": "You gain a +3 bonus to attack and damage rolls made with this magical weapon. When you score a successful hit against a construct, the damage is doubled. This does not apply to critical hits.\n\nWhile attuned to the weapon, you are able to sense the presence of any constructs within 90 feet of your current position, regardless of mundane or magical barriers or spells designed to fool the senses.\n\nOnce per day, you can use an attack action to throw the hammer at any construct within 90 feet and in your line of sight. This strike automatically hits and deals weapon damage normally, including double damage against a construct. You may use your bonus action to instantly recall the hammer back to your hand, or you can cause the hammer to split into three identical, smaller hammers that can fly away and strike three additional constructs within 90 feet. These strikes also hit automatically, however, they do not deal double damage. The hammer can only split if there are at least 4 constructs within your line of sight. Once the hammers strike, they reform into one and return to your hand."
+  },
+  {
+    "name": "Gurb's Choppa",
+    "item_type": "weapon (handaxe)",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "You gain a +1 bonus to attack and damage rolls made with this magical weapon. Twice per day, you can cause the weapon to deliver a more powerful slice, dealing an additional 1d6 slashing damage after a successful strike. This attack also dislodges a piece of the weapon into the targeted creature, and the piece of shrapnel deals an additional 1d6 slashing damage on the next turn. Pieces dislodged this way reform on the weapon after 24 hours, often in the form of jury-rigged scraps of metal attached to the blade."
+  },
+  {
+    "name": "Ivory Sword of the Juggernaut",
+    "item_type": "Weapon (Shortsword)",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "You gain a +1 bonus to attack and damage rolls made with this magical weapon. If you use the sword to take a creature's life, you become increasingly dangerous and difficult to stop. If a creature is killed with the sword, you are able to use your bonus action to move up to 20 feet and attack another creature. You do not provoke an opportunity attack by moving this way. This attack is made with a +2 bonus to the attack and damage roll. If you successfully strike the creature, you may move again up to 20 feet to attack another creature. Once again, you provoke no opportunity attack by moving this way. This attack is made with a +3 bonus to the attack and damage roll. If you succeed in that attack, you gain +3 to your AC for the next three rounds."
+  },
+  {
+    "name": "Sawtooth Greatsword",
+    "item_type": "Weapon (Greatsword)",
+    "rarity": "very rare",
+    "attunement": false,
+    "description": "You gain a +2 bonus to attack and damage rolls made with this magic weapon. Whenever you score a critical hit with this weapon, the damage is tripled instead of doubled. When you make a successful attack with this sword, you may use your bonus action to deal an additional 1d8 slashing damage. The weapon can use this ability three times a day."
+  },
+  {
+    "name": "Shadowpoint",
+    "item_type": "Weapon (Rapier)",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "You gain a +2 bonus to attack and damage rolls made with this magical weapon, and it deals an additional 1d4 necrotic damage with successful strikes. When you wield this weapon, your outline and form partially blend in with the ambient shadows, granting you a +3 bonus to Dexterity (Stealth) ability checks. Once per day, you may call upon the power of the blade and convert your form to pure shadow, increasing your movement speed by 50 feet for one turn. While moving this way, you do not provoke opportunity attacks, and you can move through the space of creatures that are larger than you are. However, you cannot end your movement that round in a space occupied by a creature."
+  },
+  {
+    "name": "Sword of the Youxia",
+    "item_type": "Weapon (Longsword)",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "You gain a +2 bonus to attack and damage rolls made with this magical weapon.\n\nWhile attuned to the sword, your movement speed increases by 20 feet regardless of armor worn or your current encumbrance. You also gain advantage on Constitution saving throws to see if you can continue to run for long distances.\n\nWhen you have the sword drawn, you can use your bonus action to have it shed bight light in a 30 foot radius and dim light for an additional 30 feet. Additionally, and useable twice per day, you can cast the spell locate creature or locate object from the sword as a bonus action."
+  },
+  {
+    "name": "Sword of the Lion Emperor",
+    "item_type": "Weapon (Longsword)",
+    "rarity": "legendary",
+    "attunement": true,
+    "description": "You gain a +3 bonus to attack and damage rolls made with this magical weapon, and it deals an additional 1d8 radiant damage to undead and fiends. The sword is inscribed with ancient runes of power that imbues its wielder with supernatural power.\n\nWhile attuned to the sword, you gain a +3 bonus to Wisdom (Perception) ability checks to notice hidden objects. You are considered ever alert and cannot be surprised or flanked. Additionally, you gain a +3 bonus to Charisma (Persuasion) ability checks when addressing multiple people.\n\nWhen you have the sword drawn, you gain a +2 to your AC and +2 to your Strength and Dexterity ability scores. You are also able to use your reaction to cast the command spell three times per day."
+  },
+  {
+    "name": "War Pick of Armor Piercing",
+    "item_type": "Weapon (War Pick)",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "You gain a +2 bonus to attack and damage rolls with this magical weapon against targets that are wearing armor or using a shield. You gain no bonus if the target is not wearing armor or not using a shield."
+  },
+  {
+    "name": "Amulet of Gazing",
+    "item_type": "wondrous item",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "You are protected from the gaze attack of creatures while you wear this amulet. In addition, the amulet has 3 charges. Using your action, you can spend one or more of the charges to cast the following spells: charm person (1 charge), eyebite (3 charges). The amulet regains 1d3 charges at midnight."
+  },
+  {
+    "name": "Amulet of Undead Control",
+    "item_type": "wondrous item",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "You are able to exert your control over undead creatures while wearing this amulet. Applicable creatures must be within 30 feet and in your line of sight and they must fail a DC 15 Wisdom saving throw. Using your action, you can control a total of 22 HD worth of undead creatures at one time. While under thrall, the creatures will not harm you or any creature you specifically designate. You are able to issue the creatures orders, however it takes you action to do so. The creatures stay under your manipulation for 1 + 1d6 hours, after which they are free of your influence, and are considered immune to the magic of the amulet for 24 hours. Undead creatures with a CR of 5 or above are immune to the powers of this amulet. The amulet needs at least 8 hours before it can be used to control undead creatures again after its use."
+  },
+  {
+    "name": "Bargura Tooth Helm",
+    "item_type": "wondrous item",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "While wearing this helm, you gain the resistances and immunities associated with Balgrua demons. You gain resistance to cold, fire, and lightning damage. In addition, you are immune to poison damage and the poisoned condition."
+  },
+  {
+    "name": "Feathered Crown",
+    "item_type": "wondrous item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "While wearing this crown, you are protected by a permanent feather fall spell. In addition, you gain a +2 bonus to saving throws against magic cast by beings from the Elemental Plane of Air."
+  },
+  {
+    "name": "Golden Mask of the Glorious Emperor",
+    "item_type": "wondrous item",
+    "rarity": "legendary",
+    "attunement": true,
+    "description": "This mask was crafted centuries ago for Emperor Claudius VI after he lost the tip of his nose and part of his cheek from the swipe of a dire badger. While wearing the mask, you are immune to bludgeoning, piercing, and slashing damage from non-magical sources. In addition, your Charisma ability score increases by 3 points and you gain advantage on Charisma saving throws and ability checks."
+  },
+  {
+    "name": "Mask of Ill Luck",
+    "item_type": "wondrous item",
+    "rarity": "uncommon",
+    "attunement": true,
+    "description": "This mask allows you to use your reaction once before a short or long rest to effect the luck of one creature near you by forcing them to reroll any one attack roll, saving throw, or ability check. The new roll is made with a -1 penalty and the outcome of the new roll is final. The creature must be within 30 feet and in your line of sight to be effected this way."
+  },
+  {
+    "name": "Mask of Insight",
+    "item_type": "wondrous item",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "This mask confers upon you great wisdom. You gain advantage on Wisdom saving throws and Wisdom (Insight) checks while wearing the mask."
+  },
+  {
+    "name": "Mask of Winged Majesty",
+    "item_type": "wondrous item",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "This mask was crafted by the Aarakocra archmage Ferrantou the Lofty Flyer. While wearing the mask, you are immune to cold damage, and gain resistance to lightning damage. If you have a flying speed, it is increased by 60 feet. In addition, you gain advantage on Dexterity saving throws and ability checks while airborne."
+  },
+  {
+    "name": "Mask of the Performer",
+    "item_type": "wondrous item",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "This beautifully painted porcelain mask grants you the ability to cast the cantrip prestidigitation at will. While the mask is worn and attuned, you are able to add your proficiency bonus to rolls made using your Bardic Inspiration."
+  },
+  {
+    "name": "Necklace of Simple Prayers",
+    "item_type": "wondrous item",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "This necklace is made of numerous small polished clay beads. There are four larger beads adorned with simple runes that correspond to the cleric cantrip they contain. Each large bead can be used to cast its cantrip once before a long rest. Using a bead this way uses your bonus action. Typically, the necklace will have the following beads: guidance, mending, resistance, spare the dying. The beads can only contain and cast cantrips found on the cleric spell list."
+  },
+  {
+    "name": "Necklace of the Predator",
+    "item_type": "wondrous item",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "This necklace is crafted from a simple string or cord and adorned with the fangs and teeth of various predator animals such as a bear or panther. The necklace has 3 charges. Using your action, you may spend one charge and use the magic of the necklace to transform yourself into one of the following animals: blood hawk, boar, brown bear, crocodile, killer whale, panther, reef shark, saber-toothed tiger, or wolf. The transformation is similar to that of the Wild Shape ability in regards to the rules that apply while you are transformed, and you stay in the beast shape for a number of minutes equal to your proficiency bonus. You can revert to your normal form earlier by using a bonus action on your turn. You automatically revert if you fall unconscious, drop to 0 hit points, or die. The necklace regains 1d3 charges at midnight."
+  },
+  {
+    "name": "Ring of Elven Lords",
+    "item_type": "ring",
+    "rarity": "artifact",
+    "attunement": true,
+    "description": "Crafted eons ago by a cabal of elven spellcasters, the Ring of Elven Lords has adorned the hands of numerous elven kings, queens, and statesmen. At the time of its creation, the elven lands of Syriddria were being threatened by orc hordes of immense size. The dark forces boiled out of their mountain holes and into the lowlands, forests, and glades of the elven people.\n\nThe valiant efforts of the elven defenders kept the majority of the descending horde away from their population centers, however, countless elven villages and outposts were utterly destroyed by the orcs. The turmoil caused by the attacks began to split the elven ruling council made up of the high elves, wood elves, and gray elves of the region. With dark forces at their doorsteps, civil war began to loom over the utopian society.\n\nA group of learned sages, sorcerers, and wizards banded together to create an item that would unite the races again. The ring is fashioned from gold and adorned with a single square cut sapphire. Runes of power were etched both inside and on the band. Weeks would pass as the cabal poured their energy and expertise into crafting the ring. When it was done, they forced the fractured council to meet and choose one among them to wear the ring."
+  },
+  {
+    "name": "Ring of the Elven Champion",
+    "item_type": "ring",
+    "rarity": "artifact",
+    "attunement": true,
+    "description": "A ring of great power that was used to unite the elven people in times of great turmoil and danger. The ring grants its wearer enhanced leadership abilities and the power to lead armies to victory. It was first given to Oakleaf, a wood elf bowman, who used its powers to unite the elven forces and lead them to victory against dark hordes. The ring has been passed down through generations of elven royalty and is closely linked to elven heritage. The ring was eventually buried under tons of rock and debris for eight centuries before being uncovered by human scavengers. It later came into the possession of an antique dealer in the city of Rhodde, and eventually passed to an elven renegade and thief."
+  },
+  {
+    "name": "Ring of Eleven Lords",
+    "item_type": "ring",
+    "rarity": "artifact",
+    "attunement": true,
+    "description": "Unfortunately, there was no rehabilitating his father, and he lost the ring while plundering a tomb of an ancient wizard. News of the whereabouts of the ring disappear after that. It is known that the wizard's tomb was plundered at least four times after that, and any of the tomb robbers could of picked the ring up and taken it with them. Divinations made to locate the ring only confirm it has not been taken to another plane of existence, however, they have yet to uncover its current location.\n\nImmunities. While attuned to the ring, you are immune to the following conditions: charmed, blinded, deafened, stunned, paralyzed, and petrified.\n\nResistances. The ring grants you resistance to magical and non-magical weapon damage.\n\nHeightened Senses. The ring grants you advantage on any Wisdom (Perception) checks that rely on sight, smell, or hearing. You are also unable to be flanked or surprised.\n\nRegeneration. You regenerate 10 hit point every turn if you start your turn with at least 1 hit point. You can regrow lost limbs and appendages in 24 hours.\n\nIncreased Ability Scores. Your Intelligence, Wisdom, and Charisma ability scores all increase by 3 points. In addition, elves regard you as friendly upon first meeting, and will regard you as such until you deal physical harm to them or someone they care about.\n\nSpellcasting. While attuned to the ring, you may use your action to cast one of the following spells: hallucinatory terrain, stone shape, creation, passwall, or telekinesis. Spells cast from the ring are cast using a spell slot that corresponds with the spell's level.\n\nSummon Warriors. You are able to use your action to conjure 10 elven warriors (stats as a knight) who will defend you for 1 + 2d12 minutes, at which time they disperse into mist. You may not use this feature again until 24 hours have passed since its last use.\n\nVulnerability. While attuned to the ring, the mental strain put upon you makes you vulnerable to psychic damage. In addition, if you are attuned to the ring for more than eleven weeks, you gain a form of indefinite madness (chosen at random) as described in the Dungeon Master's Guide. The madness can only be cured once the ring is taken off and kept off for a period of time equal to the amount of time it was worn.\n\nDestroying the Ring. The only way to destroy the ring of eleven lords is to take the ring to the Abyss and have it worn by the demon goddess Lloth. This will break the link the ring has to the eleven people and drain it of all of its magic."
+  },
+  {
+    "name": "Axe of Enemy Attunement",
+    "item_type": "weapon (any axe)",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "You gain a +1 bonus to attack and damage rolls while wielding this axe. You may use your bonus action to attune the axe to one particular creature type. Once attuned this way, creatures of the chosen type have their AC reduced by 1 point against attacks from the attuned axe only. Attunement to a creature type lasts for 1 minute, at which point the axe goes dormant, but still provides its bonus to attack and damage rolls. A short rest is needed to be able to attune the axe to another creature type."
+  },
+  {
+    "name": "Axe of Spell Stealing",
+    "item_type": "weapon (any axe)",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "You gain a +1 bonus to attack and damage rolls while wielding this axe. If you are the target of a magical spell that deals hit point damage or forces you to make a saving throw to escape adverse effects, the axe has a chance to absorb the magical energy of the spell and use it to augment critical strikes made with it. You may use your reaction to roll a 1d6 when you are targeted with a harmful spell. On a roll of 1 - 4, the spell strikes you and you must make a saving throw, if applicable. On a roll of 5 - 6, the spell is absorbed by the axe and the magical energy his held for 1 hour. In that time, if you score a critical strike with the axe, the energy is released with the blow, adding additional damage equal to the spell slot associated with the spell that was absorbed. The axe can only hold one spell at a time. If you do not perform a critical strike within the time allotted, the magical energy is released harmlessly after the time has run out."
+  },
+  {
+    "name": "Bone Armor of the Unyielding Champion",
+    "item_type": "armor (splint)",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "You gain a +2 bonus to your AC while wearing this suit of macabre armor. If you are ever brought to 0 hit points while wearing the armor, you automatically stabilize on your next turn and heal an amount of hit points equal to your proficiency bonus + your Constitution modifier, if any. This property cannot function more than once in a 12 hour period. In addition, you gain resistance to necrotic damage while wearing the armor."
+  },
+  {
+    "name": "Cold Iron Weapon",
+    "item_type": "weapon",
+    "rarity": "uncommon",
+    "attunement": false,
+    "description": "Weapons made from cold iron deal an additional 1d4 weapon damage to creatures who have the fey, undead, or fiend creature type. The weapon also counts as magical against these creatures for the purposes of immunity and resistance."
+  },
+  {
+    "name": "Dagger of Armor Penetration",
+    "item_type": "weapon",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "You gain a +1 bonus to attack and damage rolls while wielding this weapon. The dagger is enchanted to penetrate even the most secure of armors. Against foes wearing non-magical medium or heavy armor, attacks from these daggers treat those armors as if they were 1 AC less then normal."
+  },
+  {
+    "name": "Dagger of Many Tricks",
+    "item_type": "weapon",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "You gain a +2 bonus to attack and damage rolls while wielding this weapon. The dagger has 3 charges. Using your action, you can spend one or more charges to perform the following:\n\n\u2022 Increase your movement speed by 20 feet for 1 minute (1 charge).\n\n\u2022 Increase your AC by 2 for 1 minute (2 charges).\n\n\u2022 Gain resistance to one weapon damage type for 1 minute (3 charges).\n\nThe dagger regains 1d3 charges at midnight."
+  },
+  {
+    "name": "Orichalcum Armor",
+    "item_type": "armor (plate)",
+    "rarity": "legendary",
+    "attunement": true,
+    "description": "You gain a +3 bonus to your AC while wearing this suit of plate mail. Constructed on the fabled isle of Atlantis, suits of orichalcum armor were worn by the king's guard and by the island nation's generals and elite commanders. The armor grants resistance to weapon (bludgeoning, piercing, slashing) damage from non-magical sources as well as offering immunity to fire, acid, and lightning damage."
+  },
+  {
+    "name": "Armor of Increased Fortification",
+    "item_type": "armor (any medium or heavy armor)",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "Armors enchanted this way grant a +1 to your AC while wearing them. In addition, if you are subject to a critical strike, the armor grants you a 25% chance to shrug off the additional damage, and instead take no damage from the critical strike."
+  },
+  {
+    "name": "Razor of Lasting Wounds",
+    "item_type": "weapon (dagger)",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "You gain a +1 bonus to attack and damage rolls while wielding this weapon. Creatures struck by this weapon take an additional 1d4 slashing damage on the following two turns after the initial strike. Creatures cannot suffer the additional damage from a razor of lasting wounds more than once in a single encounter."
+  },
+  {
+    "name": "Shield of Battle Prowess",
+    "item_type": "armor (shield)",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "You gain a +1 bonus to you AC while wielding this shield. While you are in combat, you gain a supernatural sense of awareness on the battlefield. While wielding the shield, you are considered immune to sneak attacks, flanking, and being surprised."
+  },
+  {
+    "name": "Shield of Granite",
+    "item_type": "armor (shield)",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "You gain a +1 bonus to your AC while wielding this shield. The shield is constructed from a single block of granite and enchanted to weigh as much as a typical metal shield of its size. If you are targeted by a spell or ability that would move you against you will, the shield grants you advantage on any saving throw or ability check that would allow you to stay in your position."
+  },
+  {
+    "name": "Shield of the Ebukhosini Gada (Royal Guard)",
+    "item_type": "armor (shield)",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "You gain a +2 bonus to your AC while wielding this shield. Given to the chief's most trusted guards, these shields are considered an elite status symbol by the Zula tribes of the Great Jungle. While wielding the shield, you are able to add the shield's AC bonus (+4) to any Dexterity saving throws you make against a spell or other harmful effect that only targets you."
+  },
+  {
+    "name": "Spiked Armor",
+    "item_type": "armor (any medium or heavy armor)",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "You gain a +1 bonus to you AC while wearing this type of armor. Magically enchanted spikes can be added to any suit of medium or heavy armor that deal 3d4 piercing damage to any creature who strikes you in melee combat."
+  },
+  {
+    "name": "War Drum of the Horde",
+    "item_type": "wondrous item, artifact",
+    "rarity": "artifact",
+    "attunement": true,
+    "description": "Centuries ago, a great orc horde of immense size boiled out of their mountain holes and began to decimate everything in its path. The first to fall were small mining towns and villages located at the base of the mountains. Those communities fell within hours, and the victories had by the invaders bolstered their frenzy. Using the flayed skin of the deceases villagers, a group of orc priests crafted the war drum and consecrated it to their dark gods.\n\n    When the horde marched again, this time against an elven outpost, the war drum could be heard from miles away. The beat of the drum was timed perfectly with the march of the horde, a cacophony of noise that grew louder as they neared. The head chief's son was chosen to wield the drum, and his performance during the battle would empower the orcs to new heights of bloodlust and battle prowess.\n\n    Eventually, like most hordes, infighting between clans began to tear at the fragile alliance. In an attempt to steal the drum away from the chief's son, one clan went as far as to enter into a pact with a group of drow renegades that came to the surface to watch the horde destroy their hated kin.\n\n    The drow slew the chief's son and made off with the drum. They presented it to chief of the clan that allied with them, setting off a internal war between the clans."
+  },
+  {
+    "name": "War Drum of the Drow",
+    "item_type": "wondrous item",
+    "rarity": "artifact",
+    "attunement": true,
+    "description": "While the orcs were occupied with themselves, a force of elves and their allies managed to break their ranks. Slaughter on a scale never seen before marked the battlefield. Tens of thousands of dead bodies were left to rot while the surviving clans retreated back to their dark, mountain holes.\n\nThe drum was lost in the battle, though initial reports state it was seen once again in the possession of the drow. Those reports would later be proven true when decades later, a force of drow marched on the same eleven outpost. Bolstered by the beat of the war drum, the drow easily overtook the elven defenders. The small dark elf army moved on, marching to the drum, and sacked six more elven communities before finally being beaten back. The elves confiscated the drum and locked it away in a secure vault.\n\nThree centuries later, an expert thief would infiltrate the elven vault and pick it clean. The thief, known only as the Shadowmaster, would go on to trade the drum to a polymorphed dragon who would in turn use it as a bargaining chip in its negotiations with the orcs of the mountains. Reunited with the artifact of their people, the orcs agreed to serve the dragon as it made a bid for dominance in the region. Once again, thousands of orcs would rally to the beat of the drum and march on their neighbors. This time, the goodly races were ready for them, and the horde was met by a sizable force of elven and human defenders. The battle would be known as the War of Stomping Boots, after the noise the horde made as it marched to the perfectly timed beats of the drum.\n\nAfter the battle, the drum was lost, possibly taken by looters or by retreating orc forces. Divinations made to locate the drum have proved inconclusive, possibly due to some type of magical interference surrounding the artifact.\n\nImmunities. While attuned to the drum, you are considered immune to sonic based magical spells, such as shatter. You are also immune to any spell or magical effect that would attempt to charm you via spoken words. Any friendly creature who can hear the drum being played is considered immune to the frightened condition and they gain advantage against being charmed.\n\nIncreased Proficiency. The drum grants you a +3 bonus to Charisma (Performance) checks while playing the drum.\n\nIncreased Movement. Friendly creatures who can hear the drum being played have their base movement speed increased by 60 feet. In addition, they gain advantage against saving throws to resist exhaustion brought on by a forced march and disregard any penalties from moving in difficult terrain.\n\nRegeneration. Friendly creatures who can hear the drum being played regenerate 2 hit points per turn if they start their turn with at least 1 hit point.\n\nIncreased Weapon Damage. Friendly creatures who can hear the drum being played gain a +2 bonus to their attack and damage rolls."
+  },
+  {
+    "name": "Drum of Endless Appetites",
+    "item_type": "wondrous item",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "Increased Appetite. While attuned to the drum, you must eat and drink six times the normal amount each day.\n\nEnergy Leech. When you become attuned to the drum, one of your ability scores is reduced by 2 points (chosen at random). The loss is permanent while you are attuned to the drum.\n\nDestroying the Drum. The drum can only be destroyed by piercing the drumhead with a weapon that is wielded by one of the elven gods. Once this happens, a magical backlash of energy erupts from the drum, causing 10d20 force damage to anything within 50 feet of the instrument."
+  },
+  {
+    "name": "Backpack of Holding",
+    "item_type": "wondrous item",
+    "rarity": "very rare",
+    "attunement": false,
+    "description": "This backpack has an interior space that is considerably larger than its outside dimensions. The main storage area of the backpack can hold up to 650 pounds, not exceeding a volume of 45 cubic feet. There are three, smaller pouches, one on each sides and one on the back of the bag. Each of these pockets can hold up to 200 pounds, not exceeding 25 cubic feet. The backpack itself weighs 25 pounds, regardless of if it is empty or full to capacity. If the bag is overloaded, pierces, or torn, it ruptures and is destroyed. Its contents are scattered in Astral Plane.\n\nTurning the bag inside out will dump all of the contents, in all four compartments, harmlessly out. Creatures who require air to breathe can be placed in the main pocket only, and in there they can survive a number of minutes equal to 10 divided by the number of creatures (minimum 1 minute), after which time they would begin to suffocate.\n\nPlacing a backpack of holding inside an extradimensional space created by a similar item will instantly destroy both items and open a gate to the Astral Plane. The gate originates where the one item was placed inside the other. Any creature within 10 feet of the gate is sucked into it and sent to a random location to the Astral Plane."
+  },
+  {
+    "name": "Compass of True North",
+    "item_type": "wondrous item",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "This item can infallibly tell you which way is North on any plane of existence that has a \"north\". The compass has 3 charges. Using your action, you can expend one or more of the charges to cast the following spells: locate animals or plants (1 charge), locate object (1 charge), locate creature (3 charges). The compass regains 1 charge at midnight."
+  },
+  {
+    "name": "Elixir of the Elements",
+    "item_type": "potion",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "Drinking this elixir grants you resistance to elemental (acid, cold, fire, lightning, thunder) damage for 10 minutes. In addition, while under the effects of this potion, elemental beings see you as friendly until you do something that would harm them or harm something they care about."
+  },
+  {
+    "name": "Ever-full Canteen",
+    "item_type": "wondrous item",
+    "rarity": "uncommon",
+    "attunement": false,
+    "description": "This enchanted canteen holds an indefinite supply of whatever liquid is placed into it. If you wish to change the type of liquid it holds, the canteen's cork stopper must be securely placed and its activation word (usually found etched somewhere on the item) must be spoken. After that, the canteen can be emptied of the last bit of whatever liquid was in it, and it is ready to be filled again with a different liquid."
+  },
+  {
+    "name": "Mace of the Tribal Champion",
+    "item_type": "weapon (mace)",
+    "rarity": "rare",
+    "attunement": true,
+    "description": "You gain a +1 bonus to attack and damage rolls while wielding this weapon. Using your bonus action, the mace can be made to summon a spectral likeness of one of the totem animals that are carved onto it. The animal is incorporeal and cannot be made to deal physical harm to corporeal creatures. It can, however, attack and harm incorporeal creatures. The summoned animal takes its turn on your turn, and you can give it instructions using your bonus action. While it is summoned, you can see and hear everything it can up to a distance of 100 yards. The summoned beast has the same statistics as the animal it's picture depicts, with the notable exception of being incorporeal. No more than two animals can be etched onto the mace, and typically such maces have been found to have a bear, owl, crocodile, or ape beak, wolf, or blood hawk depicted on it. The mace can summon a spectral animal once before a short rest and the summoned animal stays for a total of 10 minutes before fading out of existence. You can de-summon the animal using another bonus action. Only one animal can be summoned at one time."
+  },
+  {
+    "name": "Potion of Concentrated Pheromones",
+    "item_type": "potion",
+    "rarity": "very rare",
+    "attunement": false,
+    "description": "Created from the distilled sweat of nymphs, when you drink this potion, you gain a +2 bonus to your Charisma ability score, as well as advantage on Charisma saving throws and skill checks for 10 minutes. Additionally, during that time, you are able to charm a single humanoid who would normally be considered attracted to your gender/orientation. They are afforded a Wisdom saving throw against a DC 14, but if you receive a 2-penalty. On a failed save they are considered charmed by you per the charm person spell for the duration of the potion's magic. Once the effect wears off, they are aware they were magically influenced and by whom."
+  },
+  {
+    "name": "Potion of Distilled Spectral Essence",
+    "item_type": "potion",
+    "rarity": "very rare",
+    "attunement": false,
+    "description": "After drinking this potion made from the captured essence of ghosts, specters, and other incorporeal beings, you are able to make yourself incorporeal and able to walk through walls, doors, and other solid barriers as if they were difficult terrain. While in this spectral form, you are considered immune to physical damage, however, magic can still effect you. You take damage normally on failed saving throws against spells that deal hit point damage. You cannot deal physical damage to creatures but you can attempt a melee touch attack using your proficiency bonus and dexterity modifier. On a successful strike, a creatures takes 10 (3d6) necrotic damage and must succeed in a DC 10 Constitution saving throw or its hit point maximum is reduced by an amount equal to the damage taken. The target dies if this effect reduces its hit point maximum to 0. The potion's magic lasts for 1 minute."
+  },
+  {
+    "name": "Lunar Potion",
+    "item_type": "potion",
+    "rarity": "very rare",
+    "attunement": false,
+    "description": "This milky white liquid contains a magical essence that is linked to the phases of the moon. Depending on when the potion is drunk, it can confer different abilities.\n\n\u25cfNew Moon. +2 bonus to Wisdom saving throws and ability checks\n\u25cfWaxing Crescent. +2 bonus to Intelligence saving throws and ability checks\n\u25cfFirst Quarter. +2 bonus to Charisma saving throws and ability checks\n\u25cfWaxing Gibbous. +2 bonus to melee and ranged attack rolls\n\u25cfFull Moon. +2 bonus to AC and Dexterity saving throws\n\u25cfWaning Gibbous. Deal 2 necrotic damage with every successful melee or ranged attack\n\u25cf Last Quarter. Automatically stabilize if brought to 0 hit points\n\u25cf Waning Crescent. Become invisible for the duration of the potion's magic\n\nThe potion's magic lasts for 10 minutes."
+  },
+  {
+    "name": "Pouch of False Coins",
+    "item_type": "wondrous item",
+    "rarity": "varies",
+    "attunement": false,
+    "description": "These pouches are typically made from animal hide and are enchanted to bring forth exact replicas of whichever type of coin the pouch was keyed to at its creation. The coins it produces are indistinguishable from a normal coin; however, they radiate strong conjuration and illusion magic if inspected by spells that would detect such things. The pouch can be made to bring forth a total of 50 coins before it becomes dormant. A long rest is needed before the pouch can be made to produce coins again."
+  },
+  {
+    "name": "Ring of Spreading Maladies",
+    "item_type": "ring",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "While wearing this ring, you are able to transmit a virulent disease with a melee touch attack using your proficiency bonus plus your Dexterity modifier, if any. A successful attack deals 10 (3d6) poison damage and forces the creature to succeed on a DC 13 Constitution saving throw or become poisoned for 1 hour. If the saving throw is failed by more than 5 points, in addition to the above hit point damage and condition, the creature becomes contagious to any other creature that touches them or whom they touch. Transmitting the disease this way forces a DC 13 Constitution saving throw. On a failed save, that creature contracts the poisoned condition for 1 hour and is considered contagious as well. The ring can be made to pass its disease twice before a long rest."
+  },
+  {
+    "name": "Ring of Many Uses",
+    "item_type": "ring",
+    "rarity": "legendary",
+    "attunement": true,
+    "description": "This simple ring is normally made from silver and constructed with a series of 6 small buttons that you can use your bonus action to press, providing you with certain abilities for the duration of the ring's magic. Upon activation, the button remains pressed and does not reset until a long rest has occurred. Starting from the left, the buttons confer upon you the following abilities:\n\n\u25cf Button One. +2 AC for 1 minute\n\u25cf Button Two. +2 to attack and damage rolls for 1 minute\n\u25cf Button Three. +2 to ability checks for 1 minute\n\u25cf Button Four. +2 to saving throws for 1 minute\n\u25cf Button Five. Resistance to non-magical weapon damage for 1 minute\n\u25cf Button Six. Resistance to the frightened, charmed, and stunned condition for 1 minute\n\nOnly one button can be activated at a time and another can not be pressed down until the duration of the last button's magic is done."
+  },
+  {
+    "name": "Ring of Moods",
+    "item_type": "ring",
+    "rarity": "rare",
+    "attunement": false,
+    "description": "While wearing this ring, you can affect the moods of humanoids around you, depending on which color you choose the ring to display. You activate the magic of the ring and choose its color as a bonus action. Creatures within 10 feet of you are afforded a DC 11 Wisdom saving throw when you activate the magic of the ring. On a failed save, they are considered influenced by the ring for 10 minutes as long as they stay within 10 feet of you. On a successful saving throw, they are considered immune to the magic of the ring for 24 hours. Once the ring is used this way, it cannot be used again until a long rest occurs. Creatures do not gain the charmed condition; the ring instead amplifies the chosen emotion to levels that would allow you to properly manipulate them if you should chose to do so.\n\n\u2022 Black - Stressed\n\u2022 Red - Fear\n\u2022 Yellow - Nervous\n\u2022 Light Blue - Relaxed\n\u2022 Orange - Passionate\n\u2022 Purple - Happy\n\u2022 Green - Jealous"
+  },
+  {
+    "name": "Ring of Persuasion",
+    "item_type": "ring",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "These rings are typically made from gold or bronze, with intricate filigree and carvings. The ring has 3 charges. You can use your action to expend one or more of the charges to cast the following spells: charm person (1 charge), calm emotions (2 charges), compulsion (3 charges). The ring regains 1d3 charges at midnight."
+  },
+  {
+    "name": "Shovel of Excavation",
+    "item_type": "wondrous item",
+    "rarity": "very rare",
+    "attunement": false,
+    "description": "This seemingly innocent looking shovel can be used to move enormous amounts of earth and rock in very little time. Every time the shovel is thrust into dirt, you can excavate up to 200 pounds of soil, rock, and vegetation. The shovel does not effect worked stone or smelted metals. The debris disappears and reappears in a chosen location no more than 100 feet away from the shovel. The shovel can be made to excavate a total of 2000 pounds of earth before it goes dormant. A long rest is needed before the magic of the shovel can be used again."
+  },
+  {
+    "name": "Universal Scroll",
+    "item_type": "scroll",
+    "rarity": "legendary",
+    "attunement": true,
+    "description": "Wondrous item, legendary (requires attunement by a bard, cleric, druid, sorcerer, warlock, or wizard)\n\nThis scroll is made of vellum and is always found blank. Once attuned, the scroll can be made to contain a single level 1 through level 7 spell known to you that has a casting time of 10 minutes or less. The spell can henceforth be cast using your action without using any spell slots as long as the scroll is in your possession. Spells cast this way are cast as if they used a spell slot corresponding to its level. Once chosen, the spell cannot be changed while the scroll is attuned to you. The scroll becomes blank when you die."
+  },
+  {
+    "name": "Warhammer of Well Placed Blows",
+    "item_type": "weapon (warhammer)",
+    "rarity": "very rare",
+    "attunement": true,
+    "description": "Weapon (warhammer), very rare (requires attunement)\n\nYou gain a +2 bonus to attack and damage rolls while you wield this weapon. In addition to the bonus, the warhammer can be made to sunder non-magical metal armors. Anytime the weapon successful connects with a creature wearing metal armor, a 1d4 is rolled. On a roll of 1, the blow lands as normal and no additional effect is felt. On a roll of 2 - 3, the opponents metal armor is considered sundered, and it loses 2 points of AC permanently. Once a suit of armor is sundered this way, it cannot be made to be sundered again; however, it can be destroyed. On a roll of 4, the opponents metal armor is considered destroyed and no longer offers an AC bonus."
+  },
+  {
+    "name": "Amulet of Encasement",
+    "item_type": "wondrous item, artifact",
+    "rarity": "artifact",
+    "attunement": true,
+    "description": "Wondrous item, artifact (requires attunement by a cleric, sorcerer, warlock, or wizard)\n\nLong ago, before the rise of elf, dwarf, or man; a race of saurian people lived and thrived on the planet. The Syslander, as they called themselves, lived in small villages and townships. A war like species, the Syslander attacked any being that was not of their lands. They defended their territory with brutal efficiency. The most powerful of them were the priests and priestesses of their creator god, Ugvog the Mighty.\n\nUgvog taught dominance through displays of power. To this end, he taught his clergy a way to preserve the bodies of their foes in an unbreakable amber-like substance. Statues of great beasts, monsters, demons, and fiends soon dominated the Syslander's lands. Silent warnings to those who dare cross over into their boundaries.\n\nThe spell, which has since been lost to time, was reputed to take a large toll from its caster. Some myths say the spellcaster would trade their own vitality to fuel the spell, reducing them to withered beings. Other tales go on to say the price paid was the life of the spellcaster. To get around the potential deadly side-effect of casting the spell, a group of priests constructed an amulet that would duplicate the magic, at little personal cost to the caster."
+  },
+  {
+    "name": "Amulet of Sylan'driddia",
+    "item_type": "wondrous item",
+    "rarity": "artifact",
+    "attunement": true,
+    "description": "Possession of the amulet was given to the most powerful of them, a priestess who was known as Sylan'driddia, roughly translated to 'Her Most Disagreeableness in Common'. With the power of the amulet, she united a number of clans under her leadership and used the amulet to destroy the clans that refused to bow down. Centuries would pass and the power of the amulet would keep Sylan'driddia alive beyond the time one of her species would normally live. Eventually she would be killed by the fiery breath of the ancient red dragon called Ranlammoth the Red Death when he marched his legions of hobgoblin soldiers against the Syslander people. The amulet was tossed in with the rest of the looted riches and Ranlammoth kept the item for another six centuries until his death at the hands of a group of eleven paladins who came upon his lair.\n\nFrom here, the amulet is lost to time for a long while, resurfacing again almost a thousand years later in the hands of a cruel sorcerer near the human city of Brevern. The sorcerer used the powers of the amulet to dominate the city, turning his rivals into amber statues and decorating his palace with them. His death came eighty years later at the hands of Rolondo the Great, a warrior of great renown and prowess.\n\nThe amulet was lost after that. Some say Rolondo tossed it into the ocean. Others say he traded it to a powerful Tiefling wizard for great riches. Stories of amber statues dotting the landscape crop up from time to time, however, the whereabouts of the amulet are unknown at this time.\n\nImmunities. While attuned to the amulet, you are immune to the following conditions: charmed, blinded, deafened, stunned, paralyzed, poisoned, frightened.\n\nImmortal. For as long as you are attuned to the amulet, you do not age. Should the amulet ever be removed from your person, your true age catches up with you, possibly leading to immediate death. You are still able to be killed through violence or other ways that would destroy your body or do great bodily harm.\n\nFreedom of Movement. The amulet makes you immune to any spell or effect that would restrict your movement. You are also not effected by difficult terrain.\n\nEncasement. The amulet can be made to shoot a beam of amber light at a creature within 60 feet of you, forcing the creature to make a DC 18 Constitution saving throw. On a failed save, they are fully encased in amber and killed instantly. The amulet can be made to shoot up to eight beams before this power goes dormant for a period of 24 hours.\n\nNecrotic Damage. Every time the encasement power is used, you suffer 33 (6d10) necrotic damage that can only be healed with rest. This effect is so powerful, it bypasses resistance and immunity to necrotic damage.\n\nDestroying the Amulet. The only way to destroy the amulet is to attune yourself to it then use its encasement ability on yourself, instantly killing you and destroying the magic of the amulet. If the amulet is ever destroyed, any amber statue it ever created instantly shatters."
+  }
+]
