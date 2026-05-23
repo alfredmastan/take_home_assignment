@@ -16,9 +16,9 @@
   - Render each of the 39 PDF pages to a base64 PNG via `pypdfium2` (scale=2)
   - Send each page image to the vision model via LangChain (`ChatAnthropic`)
   - Prompt: extract items with verbatim description — fields: `name`, `item_type`, `rarity`, `attunement` (bool), `description`
-  - Collect all items across pages, save to `data/items_raw.json`
-  - Idempotent: skip if output exists unless `--force` passed
-  - Progress: print `Page N/39 → M items` per page
+  - Pages processed in parallel via `ThreadPoolExecutor(max_workers=5)`; results collected as `(page_index, items)` tuples and sorted before final write
+  - Single JSON write at the end — no shared state during parallel execution
+  - Progress: print `Page N/39: M items` as each page completes
 
 ## Stage 2 — Ontology + DB
 

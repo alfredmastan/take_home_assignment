@@ -57,7 +57,7 @@ Linting is configured via `ruff` (see `pyproject.toml`). Run: `uv run ruff check
 
 ### Extraction pipeline (two-stage)
 
-**Stage 1 — `reznar/parse_pdf.py`:** PDF is fully image-based. Uses `claude-haiku-4-5-20251001` vision to render each page (via `pypdfium2`) and extract items with verbatim descriptions into `data/items_raw.json`. Fields: `name`, `item_type`, `rarity`, `attunement`, `description`. No semantic analysis here — pure OCR + light structure.
+**Stage 1 — `reznar/parse_pdf.py`:** PDF is fully image-based. Uses `claude-haiku-4-5-20251001` vision to render each page (via `pypdfium2`) and extract items with verbatim descriptions into `data/items_raw.json`. Fields: `name`, `item_type`, `rarity`, `attunement`, `description`. No semantic analysis — pure OCR + light structure. Pages are processed in parallel via `ThreadPoolExecutor(max_workers=5)`; each worker returns `(page_index, items)` with no shared state, results are sorted by page index and written once at the end.
 
 **Stage 2 — `reznar/extract.py`:** Reads `data/items_raw.json`, sends each item's description to a text LLM one at a time to extract ontology fields (equipment slot, offensive/defensive traits, targeting, limitations), then writes to Postgres via `db.py`.
 

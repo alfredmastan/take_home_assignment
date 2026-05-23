@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import io
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import pypdfium2
@@ -16,6 +17,7 @@ from reznar.config import VISION_MODEL
 
 PDF_PATH = Path("data/items_combined.pdf")
 OUTPUT_PATH = Path("data/items_raw.json")
+MAX_WORKERS = 5
 
 PROMPT = (
     "You are OCR-ing a page from Reznar's Arcane Oddities, a fantasy magic item shop catalog. "
@@ -63,23 +65,36 @@ def _extract_page(llm_structured, image_bytes: bytes) -> list[dict]:
     return [item.model_dump() for item in result.items]
 
 
+def _process_page(page_num: int, page: pypdfium2.PdfPage, llm_structured) -> tuple[int, list[dict]]:
+    image_bytes = _page_to_png_bytes(page)
+    items = _extract_page(llm_structured, image_bytes)
+    return page_num, items
+
+
 def main() -> None:
     llm = ChatAnthropic(model=VISION_MODEL)
     llm_structured = llm.with_structured_output(PageItems)
 
     doc = pypdfium2.PdfDocument(str(PDF_PATH))
     n_pages = len(doc)
-    all_items: list[dict] = []
+    results: dict[int, list[dict]] = {}
 
-    for i, page in enumerate(doc):
-        print(f"Page {i + 1}/{n_pages} ...", end=" ", flush=True)
-        try:
-            image_bytes = _page_to_png_bytes(page)
-            items = _extract_page(llm_structured, image_bytes)
-            print(f"{len(items)} item(s)")
-            all_items.extend(items)
-        except Exception as exc:
-            print(f"ERROR: {exc}")
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = {
+            executor.submit(_process_page, i, page, llm_structured): i
+            for i, page in enumerate(doc)
+        }
+        for future in as_completed(futures):
+            page_num = futures[future]
+            try:
+                idx, items = future.result()
+                results[idx] = items
+                print(f"Page {idx + 1}/{n_pages}: {len(items)} item(s)")
+            except Exception as exc:
+                print(f"Page {page_num + 1} ERROR: {exc}")
+                results[page_num] = []
+
+    all_items = [item for i in sorted(results) for item in results[i]]
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(json.dumps(all_items, indent=2))

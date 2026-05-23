@@ -20,4 +20,14 @@
   - Kept parser as pure OCR without any semantic analysis, just raw extraction. An LLM-based OCR is used here since the pdf is image based and has complex layouts (some of them are paragraphs and some of them has bullet points)
   - API call is done page by page to reduce hallucination in terms of context management. Uses `claude-haiku` model to keep cost low and since this only acts as parser.
   - Uses LangChain as an additional abstract layer to make it easier to swap models.
-- **Next Steps**: Design `reznar/ontology.py` Pydantic models, then build `reznar/extract.py` which further break down each items from the descriptions extracted.
+  - JSON format is used to separate each item and enable  
+- **Next Steps**: Design `reznar/ontology.py` Pydantic models, then build `reznar/extract.py` which further break down each item descriptions from the extracted json.
+
+## [2026-05-23 2:24 PM - 2:40 PM] - Parallelized PDF Parser
+- **Action**: Refactored `reznar/parse_pdf.py` to process pages concurrently using `ThreadPoolExecutor(max_workers=5)` instead of sequentially.
+- **Thought Process**:
+  - Each page's API call is fully independent, thus we can parallelize it for faster parsing.
+  - `MAX_WORKERS=5` is used in respect to Haiku's rate limits. But we can change this up accordingly.
+
+
+
