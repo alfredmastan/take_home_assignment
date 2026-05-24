@@ -13,12 +13,13 @@
 - [x] Create `reznar/parse_pdf.py`
   - Load API key from `.env` via `python-dotenv`
   - Load vision model name from `.env` via `reznar/config.py`
-  - Render each of the 39 PDF pages to a base64 PNG via `pypdfium2` (scale=2)
+  - Render each of the 39 PDF pages to a base64 JPEG via `pypdfium2` (scale=3)
   - Send each page image to the vision model via LangChain (`ChatAnthropic`)
   - Prompt: extract items with verbatim description — fields: `name`, `item_type`, `rarity`, `attunement` (bool), `description`
-  - Pages processed in parallel via `ThreadPoolExecutor(max_workers=5)`; results collected as `(page_index, items)` tuples and sorted before final write
-  - Single JSON write at the end — no shared state during parallel execution
-  - Progress: print `Page N/39: M items` as each page completes
+  - Pages processed sequentially; `CONTINUATION_HINT` passes carry item name + tail text to next page
+  - Continuation detection uses text-only algorithm: ignore images (unstructured placement), classify first text block as new item name (ALL-CAPS/bold, 1–5 words) or continuation prose
+  - Progress: print `Page N/39: M items` (with `(continuation)` tag) as each page completes
+  - Output: 80 items → `data/items_raw.json`
 
 ## Stage 2 — Ontology + DB
 
