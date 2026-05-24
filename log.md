@@ -43,3 +43,9 @@ Noticed 2 problems in the parsed JSON. Some of the texts are misspelled and item
 - **Fix**: Switched to sequential page processing with a `carry` variable holding the last item pending until it determines the next page does not contain any continuation. A `CONTINUATION_HINT` is injected into the prompt containing the item name and last 200 characters of its description as a context, so the model knows exactly where to resume. 
 
 
+## [2026-05-23 6:35 PM - 11:07 PM] - Brainstorming Ontology Design
+- **Action**: Created initial ontology design in `reznar/ontology.py` 
+- **Thought Process**:
+  - Most of the time was spent exploring the data and seeking for common grounds across all items. Like mentioned, every item has its own unique and can basically do anything. Thus, focusing on the main goal finding patterns to help Reznar guide his customers is the best way to go.
+  - To start of simple, I used the guide to build an ontology that wrap around  offensive and defensive improvements, creatures it is effective or resistant against, and environment it is strong at.
+  - There are definitely still room for improvement here in terms of the entites hierarchical structure and details it has. But for now, it seems pretty solid.

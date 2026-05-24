@@ -45,11 +45,31 @@ Entities are Pydantic `BaseModel` subclasses sharing a `_Base` with `extra="forb
 
 Each ontology module exports a `REGISTRY: dict[str, type[BaseModel]]` mapping type-name strings to model classes for generic pipeline discovery.
 
-### Key design constraints from the domain
-- Rarity tiers: common → artifact
-- Attunement: items may require attunement (limited slots per user)
-- Equipment slots: head/hands/feet/body/ring/neck/etc. — one item per slot
-- Pattern dimensions Reznar cares about: offensive, defensive, creature/environment targeting, use limitations
+### Reznar ontology — per-form classes over a shared base
+A single god-class is avoided. A shared base **`_Item(_Base)`** holds all *cross-cutting* fields (effects appear on every form — helms deal damage, potions grant resistances), and **thin per-form subclasses** pin `slot` and add a form-specific `subtype` enum only where one exists. All subclasses serialize into one flat `items` table.
+
+**Classes / `REGISTRY`:** `Weapon` (slot=hand, `subtype: WeaponType`), `Armor` (`subtype: ArmorType` incl. `shield`; slot derived: shield→off_hand, else body), `Ring` (finger), `Amulet` (neck), `Cloak` (body), `Footwear` (feet), `Headgear` (head; helm/mask/crown/headband), `Potion` (none), `Wondrous` (none — residual).
+
+**Key normalization rule:** the raw `item_type` `"wondrous item"` is D&D's miscellaneous bucket — NOT a form. The real form is recovered from the item **name** (amulets, boots, cloaks, helms are all typed "wondrous item"); `Wondrous` is reserved only for held/used objects with no wearable slot (horns, drums, chests, pipes, pouches…).
+
+**Effect schema (the design rule):** keep genuine common ground concrete; model high-variance dimensions as Pokemon-style matchup grids; never drop a description detail.
+- **Combat magnitudes** (concrete ints): `ac_bonus`, `attack_bonus`, `damage_bonus`
+- **Damage-type grid** (`list[DamageType]`): `inflicts_damage_types` (offense) · `resistances` + `immunities` (defense, kept separate — the data uses both terms) · `vulnerabilities` (weakness)
+- **Conditions:** `condition_immunities: list[Condition]` (charmed/frightened/stunned/petrified/lycanthropy…) — separate axis from damage types
+- **Creature grid** (permissive normalized strings — keep specifics like medusa/vampire): `offensive_vs_creatures` · `defensive_vs_creatures` · `weak_vs_creatures`. An item can appear in offensive AND defensive vs the same creature (e.g. Armor of Daylight's Embrace vs vampire)
+- **Environment grid** (permissive strings): `strong_in_environments` · `weak_in_environments`
+- **Utility:** `grants_abilities: list[Ability]` (control/summon/flight/invisibility/teleport/shapeshift/spellcasting…)
+- **Limitations:** `charges: int?` · `recharge: Recharge` (short_rest/long_rest/dawn/midnight/daily/finite_uses/none) · `cursed: bool` · `drawback: str?` (one-off drawbacks)
+- **Catch-all:** `special_effects: list[str]` — anything not captured structurally, so nothing in a description is lost
+- Identity carried through: `name`, `raw_description` (verbatim), `form`, `slot`, `rarity`, `attunement`
+
+**Enums:** `Rarity` (common→artifact + `varies`), `Slot`, `Form`, `WeaponType`, `ArmorType`, `DamageType` (incl. bludgeoning/piercing/slashing + fire/cold/lightning/thunder/acid/poison/necrotic/radiant/force/psychic), `Condition`, `Ability`, `Recharge`. **Normalizers** (`BeforeValidator`): damage types (electrical→lightning, sonic→thunder), creatures (strip parentheticals: `fiend (devil)`→fiend), environments (wooded→forest, immersed→underwater, flying→airborne), enum coercion (`very rare`→very_rare).
+
+**Value normalization is the key lever for Reznar's pattern-finding** — not extra tables. Storage stays one wide `items` table; the 9 classes are modeling convenience and all serialize into it. Reznar's job is cross-item queries ("which weapons/shields are good vs vampires?"), which work as a single `WHERE form IN (...) AND 'vampire' = ANY(offensive_vs_creatures)` only if values are canonical. Two parts:
+- **Canonical terms**: lowercase + synonym mapping (see Normalizers above) so one concept = one token.
+- **Category taxonomy (specific → parent), tag BOTH at extraction time** so precise and broad queries both match: `vampire`→also `undead`; `devil`/`demon`→also `fiend`; `bronze dragon`→also `dragon`. Expand damage umbrellas too: `elemental`→acid/cold/fire/lightning/thunder; `weapon damage`→bludgeoning/piercing/slashing. Store specific + parent in the same array (`offensive_vs_creatures = {vampire, undead}`); keep a small taxonomy dict in `ontology.py`. Without this, a `vampire` query misses items tagged only `undead`.
+
+**Domain facts:** rarity tiers common → artifact (+ `varies`); attunement is a bool (limited slots per user); one item per equipment slot.
 
 ## Code style
 
@@ -59,7 +79,7 @@ Linting is configured via `ruff` (see `pyproject.toml`). Run: `uv run ruff check
 
 **Stage 1 — `reznar/parse_pdf.py`:** PDF is fully image-based. Uses `claude-haiku-4-5-20251001` vision to render each page (via `pypdfium2`) and extract items with verbatim descriptions into `data/items_raw.json`. Fields: `name`, `item_type`, `rarity`, `attunement`, `description`. No semantic analysis — pure OCR + light structure. Pages are processed sequentially so each page can receive a `CONTINUATION_HINT` referencing the carry item from the prior page. When a page may continue a previous item, the hint instructs the model to use a text-only algorithm: ignore all images (decorative illustrations appear anywhere on the page — top, side, bottom — with no fixed position), scan only text top-to-bottom, and classify the first text block as a new item name (ALL-CAPS/bold, 1–5 words, no trailing punctuation) or continuation prose.
 
-**Stage 2 — `reznar/extract.py`:** Reads `data/items_raw.json`, sends each item's description to a text LLM one at a time to extract ontology fields (equipment slot, offensive/defensive traits, targeting, limitations), then writes to Postgres via `db.py`.
+**Stage 2 — `reznar/extract.py`:** Reads `data/items_raw.json`. For each item, first **classifies the form** rule-based (explicit `armor (X)`/`weapon (X)`/`ring`/`potion`, else recover from the name — `wondrous item` is not a form), looks up the class in `REGISTRY`, then sends the description to a text LLM via `ChatAnthropic(...).with_structured_output(cls)` to extract ontology fields (carrying name/rarity/attunement/raw_description through). Writes all forms into one flat `items` table via `db.py` (`CREATE TABLE IF NOT EXISTS`, list fields as `text[]`, `ON CONFLICT (name) DO UPDATE`).
 
 ### AI workflow (LangChain)
 Both pipeline stages use **LangChain** (`langchain`, `langchain-anthropic`) rather than the raw Anthropic SDK. Use `ChatAnthropic` from `langchain_anthropic` for all LLM calls.
@@ -85,7 +105,7 @@ All new files (`parse_pdf.py`, `extract.py`, `config.py`, `ontology.py`) go insi
 |------|--------|
 | `stormland/ontology.py` | Complete — reference implementation |
 | `reznar/config.py` | Created — loads `VISION_MODEL` and `ANALYSIS_MODEL` from `.env` |
-| `reznar/ontology.py` | Stub — needs entity models |
+| `reznar/ontology.py` | Stub — needs per-form classes (`_Item` base + `Weapon`/`Armor`/`Ring`/`Amulet`/`Cloak`/`Footwear`/`Headgear`/`Potion`/`Wondrous`) + `REGISTRY` |
 | `reznar/parse_pdf.py` | Created — Stage 1 PDF parser (generates `data/items_raw.json`) |
 | `reznar/extract.py` | Does not exist — Stage 2 DB loader |
 | `data/items_raw.json` | Generated — output of Stage 1 |
