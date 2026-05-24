@@ -53,7 +53,6 @@ Noticed 2 problems in the parsed JSON. Some of the texts are misspelled and item
 
 
 ## [2026-05-24 11:22 AM – 1:23 PM] - Ontology Redesign & Simplification
-
 - **Action**: Redesigned `reznar/ontology.py` and replaced per-form class hierarchy with a single `Item` carrying optional components (`Offense`, `Defense`, `Environment`, `Limitations`).
 - **Action**: Simplified the schema by dropping `WeaponType`, `ArmorType`, `DamageType`, `Recharge` enums and all their dependencies, cleaned up normalizers and removed hard-coded synonyms.
 - **Thought Process**:
@@ -63,5 +62,10 @@ Noticed 2 problems in the parsed JSON. Some of the texts are misspelled and item
   - Another thing that I considered is the complexity and how much detail I want to include in the ontology. Focusing on what Reznar wants, there's a lot of details that does not contribute to his goals. For example, the weapon type (sword/mace/axe/etc), armor type (leather/plate/etc), and so on, are not that important. Reznar wants something that help him filter based on offensive/defensive improvements, effectiveness in environment and towards creatures, limitations, and where the item is being used. Weapon type and armor type does not seem to be exactly helpful in doing so, thus, removed. 
 
 
-1:57 PM
+## [2026-05-24 2:25 PM – 3:03 PM] - Slot & Form Redesign
+- **Action**: Redesign how `Slot` and `Form` are being handled in `reznar/ontology.py`. Both `Slot` and `Form` are now extracted directly using LLM instead of letting slot derived from `Form` using static `FORM_SLOT` mapping.
+- **Action**: Removed `FORM_SLOT` mapping entirely. Added `other` value to handle edge cases to `Form` and `Condition` enums. Merged `hands` and `hand` into a single `hand` slot.
+- **Thought Process**:
+  - Reznar mentioned that it is crucial to distinguish where the item is going to be worn. With the current design, which relies on the form classification, is prone to breaking. The form could be misclassified or does not exist (in case new item comes along) and the mapping for the slot is not robust enough. Thus letting the LLM to decide this along based on the description context would be a better option.
+  - The enums for `Form` and `Condition` are prone to change if new item comes along, thus, to handle this edge case, I created a new value `other` for both enums.
 

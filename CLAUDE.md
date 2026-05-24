@@ -48,23 +48,27 @@ Each ontology module exports a `REGISTRY: dict[str, type[BaseModel]]` mapping ty
 ### Reznar ontology — single `Item` with capability components
 A single `Item` class with four optional capability components: `Offense`, `Defense`, `Environment`, `Limitations`. Each component is `None` when the item has nothing in that bucket. All items serialize to one flat `items` table.
 
-**`REGISTRY`:** `{"Item": Item}` — form classification in extract.py sets the `form` field; the LLM fills capability components.
-
-**Key normalization rule:** the raw `item_type` `"wondrous item"` is D&D's miscellaneous bucket — NOT a form. The real form is recovered from the item **name** (amulets, boots, cloaks, helms are all typed "wondrous item"); `wondrous` is reserved only for held/used objects with no wearable slot (horns, drums, chests, pipes, pouches…).
+**`REGISTRY`:** `{"Item": Item}` — the LLM extracts all fields including `slot` and `form`.
 
 **Schema:**
-- **Identity:** `name`, `form: Form`, `slot: Slot` (derived from form, never extracted), `rarity: Rarity`, `req_attunement: bool`
+- **Identity:** `name`, `slot: Slot` (LLM-extracted — where it is worn/carried), `form: Form` (LLM-extracted — what physical object it is), `rarity: Rarity`, `req_attunement: bool`
 - **`Offense`** (set only if item improves attacks or is extra effective against creatures): `attack_damage_bonus: int`, `effective_against: list[str]`
 - **`Defense`** (set only if item reduces damage, grants immunity, or protects against creatures): `ac_bonus: int`, `condition_immunities: list[Condition]`, `resistances_against: list[str]`
 - **`Environment`** (set only if a setting enhances the item): `strong_in: list[str]`
 - **`Limitations`** (set only if item has charges, curse, or drawback): `charges: int | None`, `cursed: bool`, `drawback: str | None`
 - **Catch-all:** `special_effects: list[str]` — anything not captured structurally
 
-**Enums:** `Slot`, `Form` (ring/amulet/cloak/gown/boots/helm/mask/crown/headband/armor/shield/weapon/potion/wondrous), `Rarity` (common→artifact + `varies`), `Condition` (charmed/frightened/stunned/blinded/deafened/paralyzed/petrified/poisoned/exhaustion/lycanthropy/unconscious).
+`slot` and `form` are independent — the LLM infers slot from item description semantics (robust to inconsistent naming), and form from the physical object type. `wondrous` covers held/used objects with no wearable slot (horn, drum, pouch, chest, pipe); `other` handles any form not in the enum.
+
+**Enums:**
+- `Slot`: head/neck/body/feet/finger/hand/off_hand/none (fixed, exhaustive)
+- `Form`: ring/amulet/cloak/gown/boots/helm/mask/crown/headband/armor/shield/weapon/potion/wondrous/other
+- `Rarity`: common/uncommon/rare/very_rare/legendary/artifact/varies
+- `Condition`: charmed/frightened/stunned/blinded/deafened/paralyzed/petrified/poisoned/exhaustion/lycanthropy/unconscious/other
 
 **Normalizers (`BeforeValidator`):** `_coerce_enum` (lowercase+underscore for enum fields); `_norm_str_list` (slug each element + dedup, used for `ConditionList` and `EnvironmentList`); `_norm_creatures` (strip parentheticals: `fiend (devil)`→fiend + inner term; expand via `CREATURE_TAXONOMY`).
 
-**`CREATURE_TAXONOMY`** tags both specific and parent so either query matches: `vampire`/lich/ghoul/… → also `undead`; `devil`/`demon` → also `fiend`; `werewolf`/`lycanthrope` → also `shapechanger`; `wyrmling`/`bronze_dragon` → also `dragon`; `medusa` → also `monstrosity`.
+**`CREATURE_TAXONOMY`** tags both specific and parent so either query matches: `vampire` → also `undead`; `devil`/`demon` → also `fiend`; `lycanthrope` → also `shapechanger`; `medusa`/`hydra` → also `monstrosity`; `drow`/`orc` → also `humanoid`.
 
 ## Code style
 
@@ -74,7 +78,7 @@ Linting is configured via `ruff` (see `pyproject.toml`). Run: `uv run ruff check
 
 **Stage 1 — `reznar/parse_pdf.py`:** PDF is fully image-based. Uses `claude-haiku-4-5-20251001` vision to render each page (via `pypdfium2`) and extract items with verbatim descriptions into `data/items_raw.json`. Fields: `name`, `item_type`, `rarity`, `attunement`, `description`. No semantic analysis — pure OCR + light structure. Pages are processed sequentially so each page can receive a `CONTINUATION_HINT` referencing the carry item from the prior page. When a page may continue a previous item, the hint instructs the model to use a text-only algorithm: ignore all images (decorative illustrations appear anywhere on the page — top, side, bottom — with no fixed position), scan only text top-to-bottom, and classify the first text block as a new item name (ALL-CAPS/bold, 1–5 words, no trailing punctuation) or continuation prose.
 
-**Stage 2 — `reznar/extract.py`:** Reads `data/items_raw.json`. For each item, first **classifies the form** rule-based (explicit `armor (X)`/`weapon (X)`/`ring`/`potion`, else recover from the name — `wondrous item` is not a form), then sends the description to a text LLM via `ChatAnthropic(...).with_structured_output(Item)` to extract ontology fields (carrying `name`/`rarity`/`req_attunement`/`form` through). Writes all items into one flat `items` table via `db.py` (`CREATE TABLE IF NOT EXISTS`, list fields as `text[]`, `ON CONFLICT (name) DO UPDATE`).
+**Stage 2 — `reznar/extract.py`:** Reads `data/items_raw.json`. For each item, sends name + description to a text LLM via `ChatAnthropic(...).with_structured_output(Item)` to extract all ontology fields (`slot`, `form`, capability components, etc.), carrying `name`/`rarity`/`req_attunement` through from Stage 1. Writes all items into one flat `items` table via `db.py` (`CREATE TABLE IF NOT EXISTS`, list fields as `text[]`, `ON CONFLICT (name) DO UPDATE`).
 
 ### AI workflow (LangChain)
 Both pipeline stages use **LangChain** (`langchain`, `langchain-anthropic`) rather than the raw Anthropic SDK. Use `ChatAnthropic` from `langchain_anthropic` for all LLM calls.

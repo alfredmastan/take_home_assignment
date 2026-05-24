@@ -15,7 +15,6 @@ from pydantic import (
     BeforeValidator,
     ConfigDict,
     Field,
-    model_validator,
 )
 
 
@@ -32,7 +31,6 @@ class Slot(StrEnum):
     head = "head"
     neck = "neck"
     body = "body"
-    hands = "hands"
     feet = "feet"
     finger = "finger"
     hand = "hand"
@@ -55,6 +53,7 @@ class Form(StrEnum):
     weapon = "weapon"
     potion = "potion"
     wondrous = "wondrous"
+    other = "other"
 
 
 class Rarity(StrEnum):
@@ -79,26 +78,19 @@ class Condition(StrEnum):
     exhaustion = "exhaustion"
     lycanthropy = "lycanthropy"
     unconscious = "unconscious"
+    other = "other"
 
 
 # specific creature -> broad parent; both are tagged so either query matches
 CREATURE_TAXONOMY = {
     "vampire": "undead",
-    "lich": "undead",
-    "zombie": "undead",
-    "skeleton": "undead",
-    "ghost": "undead",
-    "specter": "undead",
-    "wraith": "undead",
-    "ghoul": "undead",
     "devil": "fiend",
     "demon": "fiend",
-    "barlgura": "fiend",
-    "werewolf": "shapechanger",
     "lycanthrope": "shapechanger",
-    "wyrmling": "dragon",
-    "bronze_dragon": "dragon",
     "medusa": "monstrosity",
+    "hydra": "monstrosity",
+    "drow": "humanoid",
+    "orc": "humanoid",
 }
 
 
@@ -145,15 +137,6 @@ def _norm_creatures(v):
 
 
 # Annotated field types
-FormField = Annotated[
-    Form,
-    BeforeValidator(_coerce_enum),
-    Hint(
-        "Physical form of the item: ring/amulet/cloak/gown/boots/helm/mask/crown/headband/"
-        "armor/shield/weapon/potion/wondrous. Use 'wondrous' only for items with no wearable "
-        "slot (horn, drum, pouch, chest, pipe, etc.)."
-    ),
-]
 RarityField = Annotated[
     Rarity,
     BeforeValidator(_coerce_enum),
@@ -168,7 +151,7 @@ ConditionList = Annotated[
     Hint(
         "Conditions this item grants immunity to. "
         "Valid values: charmed/frightened/stunned/blinded/deafened/paralyzed/petrified/"
-        "poisoned/exhaustion/lycanthropy/unconscious."
+        "poisoned/exhaustion/lycanthropy/unconscious/other."
     ),
 ]
 CreatureList = Annotated[
@@ -176,9 +159,8 @@ CreatureList = Annotated[
     BeforeValidator(_norm_creatures),
     Hint(
         "Creature types as lowercase slugs. Include both the specific type and its parent category: "
-        "vampire/lich/ghoul/zombie/skeleton/ghost/specter/wraith → also undead; "
-        "devil/demon → also fiend; werewolf/lycanthrope → also shapechanger; "
-        "wyrmling/bronze_dragon → also dragon; medusa → also monstrosity."
+        "vampire → also undead; devil/demon → also fiend; lycanthrope → also shapechanger; "
+        "medusa/hydra → also monstrosity; drow/orc → also humanoid."
     ),
 ]
 EnvironmentList = Annotated[
@@ -189,24 +171,31 @@ EnvironmentList = Annotated[
         "Examples: underwater/forest/airborne/darkness/daylight/cold/desert/urban/underground."
     ),
 ]
-
-# slot is derived from form, never extracted by the LLM to avoid hallucination
-FORM_SLOT: dict[Form, Slot] = {
-    Form.ring: Slot.finger,
-    Form.amulet: Slot.neck,
-    Form.cloak: Slot.body,
-    Form.gown: Slot.body,
-    Form.boots: Slot.feet,
-    Form.helm: Slot.head,
-    Form.mask: Slot.head,
-    Form.crown: Slot.head,
-    Form.headband: Slot.head,
-    Form.armor: Slot.body,
-    Form.shield: Slot.off_hand,
-    Form.weapon: Slot.hand,
-    Form.potion: Slot.none,
-    Form.wondrous: Slot.none,
-}
+SlotField = Annotated[
+    Slot,
+    BeforeValidator(_coerce_enum),
+    Hint(
+        "Where on the body this item is worn or carried: "
+        "head (hat/helm/mask/crown/tiara/circlet/headband/cap), "
+        "neck (amulet/pendant/necklace/collar), "
+        "body (cloak/armor/robe/gown/vest/coat), "
+        "feet (boots/shoes/sandals/slippers), "
+        "finger (ring/band), "
+        "hand (weapon/wand/staff/rod/gloves/gauntlets), "
+        "off_hand (shield/buckler), "
+        "none (potion or consumable with no wearable slot)."
+    ),
+]
+FormField = Annotated[
+    Form,
+    BeforeValidator(_coerce_enum),
+    Hint(
+        "Physical form of the item: "
+        "ring/amulet/cloak/gown/boots/helm/mask/crown/headband/armor/shield/weapon/potion/wondrous/other. "
+        "Use 'wondrous' for held/used objects with no wearable slot (horn, drum, pouch, chest, pipe). "
+        "Use 'other' if none of the above forms apply."
+    ),
+]
 
 
 class _Base(BaseModel):
@@ -261,8 +250,8 @@ class Limitations(_Base):
 
 class Item(_Base):
     name: str = Field(min_length=1)
+    slot: SlotField
     form: FormField
-    slot: Slot | None = None
     rarity: RarityField
     req_attunement: bool = False
 
@@ -275,11 +264,6 @@ class Item(_Base):
         default=[],
         description="Effects not captured by offense/defense/environment/limitations, as short phrases (e.g. 'grants darkvision 60 ft', 'casts Misty Step once per day').",
     )
-
-    @model_validator(mode="after")
-    def _derive_slot(self) -> Item:
-        self.slot = FORM_SLOT[Form(self.form)].value
-        return self
 
 
 REGISTRY: dict[str, type[BaseModel]] = {
