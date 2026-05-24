@@ -1,19 +1,8 @@
 """Reznar's Arcane Oddities — domain ontology.
 
-Per-form Pydantic classes composed from a universal `_Item` base plus two
-capability mixins — `_Offense` (offensive improvements) and `_Defense`
-(defensive improvements). Each form mixes in only the blocks it can use, so
-combat magnitudes never appear on a ring and AC bonuses never appear on a
-weapon. Forms pin `slot` and add a `subtype` enum only where one exists
-(Weapon, Armor).
-
-All classes serialize into one flat `items` table. The point of the design is
-cross-item pattern-finding for Reznar ("which weapons/shields are good vs
-vampires?"), which works as a single SQL filter only if values are canonical —
-so the normalizers below lowercase + map synonyms, and expand a small taxonomy
-(specific -> parent) so a query for `vampire` also matches items tagged `undead`.
-
-See ../stormland/ontology.py for the reference pattern.
+A single `Item` with optional capability components: Offense, Defense, Environment, Limitations.
+Each component is None when the item has nothing in that bucket. All items serialize to one flat
+`items` table.
 """
 
 from __future__ import annotations
@@ -26,12 +15,11 @@ from pydantic import (
     BeforeValidator,
     ConfigDict,
     Field,
+    model_validator,
 )
 
 
-# ---------------------------------------------------------------------------
-# Marker: free-text description for LLM agents, carried as Annotated metadata.
-# ---------------------------------------------------------------------------
+# Hint carries field descriptions as Annotated metadata for LLM prompts.
 class Hint:
     __slots__ = ("text",)
 
@@ -39,9 +27,7 @@ class Hint:
         self.text = text
 
 
-# ---------------------------------------------------------------------------
 # Controlled vocabularies
-# ---------------------------------------------------------------------------
 class Slot(StrEnum):
     head = "head"
     neck = "neck"
@@ -81,47 +67,6 @@ class Rarity(StrEnum):
     varies = "varies"
 
 
-class WeaponType(StrEnum):
-    sword = "sword"
-    dagger = "dagger"
-    axe = "axe"
-    battleaxe = "battleaxe"
-    handaxe = "handaxe"
-    greatsword = "greatsword"
-    longsword = "longsword"
-    shortsword = "shortsword"
-    rapier = "rapier"
-    mace = "mace"
-    warhammer = "warhammer"
-    war_pick = "war_pick"
-    any = "any"
-
-
-class ArmorType(StrEnum):
-    leather = "leather"
-    half_plate = "half_plate"
-    plate = "plate"
-    splint = "splint"
-    medium_or_heavy = "medium_or_heavy"
-    any = "any"
-
-
-class DamageType(StrEnum):
-    bludgeoning = "bludgeoning"
-    piercing = "piercing"
-    slashing = "slashing"
-    fire = "fire"
-    cold = "cold"
-    lightning = "lightning"
-    thunder = "thunder"
-    acid = "acid"
-    poison = "poison"
-    necrotic = "necrotic"
-    radiant = "radiant"
-    force = "force"
-    psychic = "psychic"
-
-
 class Condition(StrEnum):
     charmed = "charmed"
     frightened = "frightened"
@@ -136,54 +81,7 @@ class Condition(StrEnum):
     unconscious = "unconscious"
 
 
-class Recharge(StrEnum):
-    none = "none"
-    short_rest = "short_rest"
-    long_rest = "long_rest"
-    dawn = "dawn"
-    midnight = "midnight"
-    daily = "daily"
-    finite_uses = "finite_uses"
-
-
-# ---------------------------------------------------------------------------
-# Normalization maps — canonical terms + specific->parent taxonomy
-# ---------------------------------------------------------------------------
-DAMAGE_SYNONYMS = {
-    "electrical": "lightning",
-    "electric": "lightning",
-    "sonic": "thunder",
-}
-DAMAGE_UMBRELLAS = {
-    "elemental": ["acid", "cold", "fire", "lightning", "thunder"],
-    "weapon": ["bludgeoning", "piercing", "slashing"],
-    "weapon_damage": ["bludgeoning", "piercing", "slashing"],
-    "physical": ["bludgeoning", "piercing", "slashing"],
-    "nonmagical": ["bludgeoning", "piercing", "slashing"],
-}
-CONDITION_SYNONYMS = {
-    "charm": "charmed",
-    "fear": "frightened",
-    "frighten": "frightened",
-    "stun": "stunned",
-    "blind": "blinded",
-    "deafen": "deafened",
-    "paralyze": "paralyzed",
-    "paralysis": "paralyzed",
-    "petrification": "petrified",
-    "petrify": "petrified",
-    "poison": "poisoned",
-}
-RECHARGE_SYNONYMS = {
-    "day": "daily",
-    "daily": "daily",
-    "per_day": "daily",
-    "24_hours": "daily",
-    "short": "short_rest",
-    "long": "long_rest",
-    "finite": "finite_uses",
-}
-# specific creature -> broad parent category (tag BOTH so either query matches)
+# specific creature -> broad parent; both are tagged so either query matches
 CREATURE_TAXONOMY = {
     "vampire": "undead",
     "lich": "undead",
@@ -202,23 +100,9 @@ CREATURE_TAXONOMY = {
     "bronze_dragon": "dragon",
     "medusa": "monstrosity",
 }
-ENVIRONMENT_SYNONYMS = {
-    "wooded": "forest",
-    "woods": "forest",
-    "immersed": "underwater",
-    "water": "underwater",
-    "submerged": "underwater",
-    "flying": "airborne",
-    "aerial": "airborne",
-    "dark": "darkness",
-    "sunlight": "daylight",
-    "arctic": "cold",
-}
 
 
-# ---------------------------------------------------------------------------
-# Helpers + field normalizers
-# ---------------------------------------------------------------------------
+# Helpers
 def _slug(v: str) -> str:
     return v.strip().lower().replace(" ", "_").replace("-", "_")
 
@@ -234,30 +118,10 @@ def _coerce_enum(v):
     return _slug(v) if isinstance(v, str) else v
 
 
-def _norm_damage_list(v):
+def _norm_str_list(v):
     if not isinstance(v, list):
         return v
-    out: list[str] = []
-    for raw in v:
-        if not isinstance(raw, str):
-            out.append(raw)
-            continue
-        key = _slug(raw)
-        if key in DAMAGE_UMBRELLAS:
-            out.extend(DAMAGE_UMBRELLAS[key])
-            continue
-        mapped = DAMAGE_SYNONYMS.get(key, key)
-        if mapped is not None:
-            out.append(mapped)
-    return _dedup(out)
-
-
-def _norm_conditions(v):
-    if not isinstance(v, list):
-        return v
-    return _dedup(
-        [CONDITION_SYNONYMS.get(_slug(x), _slug(x)) if isinstance(x, str) else x for x in v]
-    )
+    return _dedup([_slug(x) if isinstance(x, str) else x for x in v])
 
 
 def _norm_creatures(v):
@@ -275,209 +139,149 @@ def _norm_creatures(v):
             if not term:
                 continue
             out.append(term)
-            if term in CREATURE_TAXONOMY:  # also tag the broad parent
+            if term in CREATURE_TAXONOMY:
                 out.append(CREATURE_TAXONOMY[term])
     return _dedup(out)
 
 
-def _norm_environments(v):
-    if not isinstance(v, list):
-        return v
-    return _dedup(
-        [ENVIRONMENT_SYNONYMS.get(_slug(x), _slug(x)) if isinstance(x, str) else x for x in v]
-    )
-
-
-def _norm_recharge(v):
-    if not isinstance(v, str):
-        return v
-    s = _slug(v)
-    return RECHARGE_SYNONYMS.get(s, s)
-
-
-# ---------------------------------------------------------------------------
 # Annotated field types
-# ---------------------------------------------------------------------------
 FormField = Annotated[
-    Form, BeforeValidator(_coerce_enum), Hint("Object kind, e.g. ring/amulet/helm.")
+    Form,
+    BeforeValidator(_coerce_enum),
+    Hint(
+        "Physical form of the item: ring/amulet/cloak/gown/boots/helm/mask/crown/headband/"
+        "armor/shield/weapon/potion/wondrous. Use 'wondrous' only for items with no wearable "
+        "slot (horn, drum, pouch, chest, pipe, etc.)."
+    ),
 ]
-SlotField = Annotated[Slot, BeforeValidator(_coerce_enum), Hint("Where the item is worn/held.")]
 RarityField = Annotated[
     Rarity,
     BeforeValidator(_coerce_enum),
-    Hint("common|uncommon|rare|very_rare|legendary|artifact|varies; 'very rare' is normalized."),
-]
-WeaponTypeField = Annotated[
-    WeaponType, BeforeValidator(_coerce_enum), Hint("Weapon kind, e.g. dagger.")
-]
-ArmorTypeField = Annotated[
-    ArmorType,
-    BeforeValidator(_coerce_enum),
-    Hint("Armor kind incl. 'shield'; 'half-plate' is normalized to half_plate."),
-]
-RechargeField = Annotated[
-    Recharge,
-    BeforeValidator(_norm_recharge),
-    Hint("How the item recharges: short_rest|long_rest|dawn|midnight|daily|finite_uses|none."),
-]
-
-DamageList = Annotated[
-    list[DamageType],
-    BeforeValidator(_norm_damage_list),
     Hint(
-        "Damage types; 'elemental' expands to its 5 types, 'weapon' to bludgeoning/piercing/slashing."
+        "Rarity tier: common|uncommon|rare|very_rare|legendary|artifact|varies. "
+        "Normalize 'very rare' → 'very_rare'. Use 'varies' if rarity depends on variant or roll."
     ),
 ]
 ConditionList = Annotated[
     list[Condition],
-    BeforeValidator(_norm_conditions),
-    Hint("Conditions the item makes you immune to (charmed/frightened/stunned/petrified/...)."),
+    BeforeValidator(_norm_str_list),
+    Hint(
+        "Conditions this item grants immunity to. "
+        "Valid values: charmed/frightened/stunned/blinded/deafened/paralyzed/petrified/"
+        "poisoned/exhaustion/lycanthropy/unconscious."
+    ),
 ]
 CreatureList = Annotated[
     list[str],
     BeforeValidator(_norm_creatures),
-    Hint("Creature types; a specific tag also adds its parent (vampire->undead, devil->fiend)."),
+    Hint(
+        "Creature types as lowercase slugs. Include both the specific type and its parent category: "
+        "vampire/lich/ghoul/zombie/skeleton/ghost/specter/wraith → also undead; "
+        "devil/demon → also fiend; werewolf/lycanthrope → also shapechanger; "
+        "wyrmling/bronze_dragon → also dragon; medusa → also monstrosity."
+    ),
 ]
 EnvironmentList = Annotated[
     list[str],
-    BeforeValidator(_norm_environments),
-    Hint("Environments: underwater/forest/airborne/darkness/daylight/cold/..."),
+    BeforeValidator(_norm_str_list),
+    Hint(
+        "Environments as lowercase slugs where the item is enhanced or relevant. "
+        "Examples: underwater/forest/airborne/darkness/daylight/cold/desert/urban/underground."
+    ),
 ]
 
+# slot is derived from form, never extracted by the LLM to avoid hallucination
+FORM_SLOT: dict[Form, Slot] = {
+    Form.ring: Slot.finger,
+    Form.amulet: Slot.neck,
+    Form.cloak: Slot.body,
+    Form.gown: Slot.body,
+    Form.boots: Slot.feet,
+    Form.helm: Slot.head,
+    Form.mask: Slot.head,
+    Form.crown: Slot.head,
+    Form.headband: Slot.head,
+    Form.armor: Slot.body,
+    Form.shield: Slot.off_hand,
+    Form.weapon: Slot.hand,
+    Form.potion: Slot.none,
+    Form.wondrous: Slot.none,
+}
 
-# ---------------------------------------------------------------------------
-# Base + capability mixins. Each form composes only the blocks it can use, so
-# combat magnitudes never appear on a ring and AC bonuses never appear on a
-# weapon. All forms still serialize into one flat `items` table (union of cols).
-# ---------------------------------------------------------------------------
+
 class _Base(BaseModel):
     model_config = ConfigDict(extra="forbid", use_enum_values=True)
 
 
-class _Item(_Base):
-    """Universal fields shared by every form: identity, environments, limits."""
-
-    # Identity
-    name: str = Field(min_length=1)
-    form: FormField
-    slot: SlotField
-    rarity: RarityField
-    attunement: bool = False
-
-    # Environment (only the "strong in" direction occurs in the data)
-    strong_in_environments: EnvironmentList = Field(
-        default=[],
-        description="Environments where the item is enhanced (underwater/forest/airborne/...).",
-    )
-
-    # Limitations — any activated magic item can have these, regardless of form
-    charges: int | None = None
-    recharge: RechargeField = Recharge.none
-    cursed: bool = False
-    drawback: str | None = Field(
-        default=None, description="One-off drawback not captured structurally."
-    )
-
-
-class _Offense(_Base):
-    """Offensive improvements — for forms that deal or boost damage."""
+class Offense(_Base):
+    """Set only if the item improves attacks or is extra effective against specific creatures."""
 
     attack_damage_bonus: int = Field(
-        default=0, description="Flat bonus to attack AND damage rolls (always the same value)."
-    )
-    inflicts_damage_types: DamageList = Field(
-        default=[], description="Damage types the item deals/adds on hit."
+        default=0, description="Flat bonus applied to both attack rolls and damage rolls."
     )
     effective_against: CreatureList = Field(
         default=[],
-        description="Creature types the item is extra effective ATTACKING (extra damage/control).",
+        description="Creature types this item deals extra damage or applies extra control effects against.",
     )
 
 
-class _Defense(_Base):
-    """Defensive improvements — for forms that protect the wearer."""
+class Defense(_Base):
+    """Set only if the item reduces damage, grants condition immunity, or protects against creature types."""
 
-    ac_bonus: int = 0
-    resistances: DamageList = Field(
-        default=[], description="Damage types taken at half (resistance)."
+    ac_bonus: int = Field(default=0, description="Flat bonus to Armor Class.")
+    condition_immunities: ConditionList = Field(
+        default=[], description="Conditions the wearer is immune to while using this item."
     )
-    damage_immunities: DamageList = Field(
-        default=[], description="Damage types taken as zero (immunity)."
-    )
-    condition_immunities: ConditionList = []
-    resistant_against: CreatureList = Field(
-        default=[], description="Creature types the item PROTECTS you against."
+    resistances_against: CreatureList = Field(
+        default=[], description="Creature types this item grants resistance or protection against."
     )
 
 
-# ---------------------------------------------------------------------------
-# Per-form classes — compose base + the relevant capability blocks, pin slot
-# (+ subtype enum where one exists).
-# ---------------------------------------------------------------------------
-class Weapon(_Item, _Offense):
-    form: FormField = Form.weapon
-    slot: SlotField = Slot.hand
-    subtype: WeaponTypeField = WeaponType.any
+class Environment(_Base):
+    """Set only if a specific setting enhances the item's function or grants bonuses."""
+
+    strong_in: EnvironmentList = Field(
+        default=[],
+        description="Environments where this item grants bonuses or enhanced abilities.",
+    )
 
 
-class Armor(_Item, _Offense, _Defense):
-    form: FormField = Form.armor
-    slot: SlotField = Slot.body
-    subtype: ArmorTypeField = ArmorType.any
+class Limitations(_Base):
+    """Set only if the item has charges, a curse, or a notable drawback."""
+
+    charges: int | None = Field(
+        default=None, description="Number of charges the item starts with; None if unlimited use."
+    )
+    cursed: bool = False
+    drawback: str | None = Field(
+        default=None,
+        description="Freetext penalty not captured by cursed/charges (e.g. 'reduces Strength by 2 while worn').",
+    )
 
 
-class Shield(_Item, _Defense):
-    form: FormField = Form.shield
-    slot: SlotField = Slot.off_hand
+class Item(_Base):
+    name: str = Field(min_length=1)
+    form: FormField
+    slot: Slot | None = None
+    rarity: RarityField
+    req_attunement: bool = False
+
+    offense: Offense | None = None
+    defense: Defense | None = None
+    environment: Environment | None = None
+    limitations: Limitations | None = None
+
+    special_effects: list[str] = Field(
+        default=[],
+        description="Effects not captured by offense/defense/environment/limitations, as short phrases (e.g. 'grants darkvision 60 ft', 'casts Misty Step once per day').",
+    )
+
+    @model_validator(mode="after")
+    def _derive_slot(self) -> Item:
+        self.slot = FORM_SLOT[Form(self.form)].value
+        return self
 
 
-class Ring(_Item, _Defense):
-    form: FormField = Form.ring
-    slot: SlotField = Slot.finger
-
-
-class Amulet(_Item, _Defense):
-    form: FormField = Form.amulet
-    slot: SlotField = Slot.neck
-
-
-class Cloak(_Item, _Defense):
-    form: FormField = Form.cloak  # cloak or gown
-    slot: SlotField = Slot.body
-
-
-class Footwear(_Item, _Offense):
-    form: FormField = Form.boots
-    slot: SlotField = Slot.feet
-
-
-class Headgear(_Item, _Offense, _Defense):
-    form: FormField = Form.helm  # helm/mask/crown/headband
-    slot: SlotField = Slot.head
-
-
-class Potion(_Item, _Defense):
-    form: FormField = Form.potion
-    slot: SlotField = Slot.none
-
-
-class Wondrous(_Item, _Offense, _Defense):
-    form: FormField = Form.wondrous
-    slot: SlotField = Slot.none
-
-
-# ---------------------------------------------------------------------------
-# Registry — type-name string -> model class, for generic pipeline discovery.
-# ---------------------------------------------------------------------------
 REGISTRY: dict[str, type[BaseModel]] = {
-    "Weapon": Weapon,
-    "Armor": Armor,
-    "Shield": Shield,
-    "Ring": Ring,
-    "Amulet": Amulet,
-    "Cloak": Cloak,
-    "Footwear": Footwear,
-    "Headgear": Headgear,
-    "Potion": Potion,
-    "Wondrous": Wondrous,
+    "Item": Item,
 }

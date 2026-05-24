@@ -39,7 +39,7 @@ Noticed 2 problems in the parsed JSON. Some of the texts are misspelled and item
 - **Fix**: Increased render scale to 3.0 and switched from PNG to JPEG (quality=85) to compress and stay under Anthropic's 5 MB image limit (~700–850 KB per page vs ~5.6 MB as PNG).
 
 ### Handling Multi-page item description
-- **Problem**: Some items have descriptions more than 1 page, and it was being truncated to only the first page. To ensure continuation, I include the context from the previous page, thus, it must be run sequentially. The parallel processing implemented before is reverted. 
+- **Problem**: Some items have descriptions more than 1 page, and it was being truncated to only the first page. To ensure continuation, I include the context from the previous page, thus, it has to be run sequentially. The parallel processing implemented before is reverted. 
 - **Fix**: Switched to sequential page processing with a `carry` variable holding the last item pending until it determines the next page does not contain any continuation. A `CONTINUATION_HINT` is injected into the prompt containing the item name and last 200 characters of its description as a context, so the model knows exactly where to resume. 
 
 
@@ -49,3 +49,19 @@ Noticed 2 problems in the parsed JSON. Some of the texts are misspelled and item
   - Most of the time was spent exploring the data and seeking for common grounds across all items. Like mentioned, every item has its own unique and can basically do anything. Thus, focusing on the main goal finding patterns to help Reznar guide his customers is the best way to go.
   - To start of simple, I used the guide to build an ontology that wrap around  offensive and defensive improvements, creatures it is effective or resistant against, and environment it is strong at.
   - There are definitely still room for improvement here in terms of the entites hierarchical structure and details it has. But for now, it seems pretty solid.
+
+
+
+## [2026-05-24 11:22 AM – 1:23 PM] - Ontology Redesign & Simplification
+
+- **Action**: Redesigned `reznar/ontology.py` and replaced per-form class hierarchy with a single `Item` carrying optional components (`Offense`, `Defense`, `Environment`, `Limitations`).
+- **Action**: Simplified the schema by dropping `WeaponType`, `ArmorType`, `DamageType`, `Recharge` enums and all their dependencies, cleaned up normalizers and removed hard-coded synonyms.
+- **Thought Process**:
+  - Having scalability in mind, the initial ontology seems to be lacking. For example, what if there's a new item like a Ring that can deal damage? The current ontology would not be able to handle that since Ring only has defense component attached to it. That said, splitting by item form seems like not the way to go.
+  - With the core variables and features already defined, I just need to restructure them in a way that is more flexible and modular. In this case, letting one class handle multiple forms seem to be the right move since all item can have offensive/defensive improvements, effectiveness towards creatures and in certain environment, and limitations. Splitting and grouping these variables into its own dimension, like Offensive, Defensive, Environment, and Limitations, creates modularity and flexibility we need.
+  - This schema able to handle all combinations that an item might have. For example, if there's a new potion that can deal damage and effective in water, or a new armor that is effective in forest only. Furthermore, adding more features to the dimensions are also much easier. For example, if I want to handle a new feature that gives an item disadvantage in certain environment, I can easily add that to the Environment class.
+  - Another thing that I considered is the complexity and how much detail I want to include in the ontology. Focusing on what Reznar wants, there's a lot of details that does not contribute to his goals. For example, the weapon type (sword/mace/axe/etc), armor type (leather/plate/etc), and so on, are not that important. Reznar wants something that help him filter based on offensive/defensive improvements, effectiveness in environment and towards creatures, limitations, and where the item is being used. Weapon type and armor type does not seem to be exactly helpful in doing so, thus, removed. 
+
+
+1:57 PM
+
