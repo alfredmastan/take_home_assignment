@@ -15,7 +15,7 @@ Take-home for MulhollandAI: design an ontology for Reznar's Arcane Oddities (fan
 | `stormland/ontology.py` | Complete — reference implementation |
 | `reznar/config.py` | Complete — loads `VISION_MODEL`/`ANALYSIS_MODEL` from `.env` |
 | `reznar/ontology.py` | Complete — `Item` + components + `REGISTRY` |
-| `reznar/parse_pdf.py` | Complete — Stage 1 PDF → `data/items_raw.json` (80 items) |
+| `reznar/parser.py` | Complete — Stage 1 PDF → `data/items_raw.json` (80 items) |
 | `reznar/extract.py` | Complete — Stage 2 → `items` table in Postgres |
 | `data/items_raw.json` | Generated — 80 items |
 | `analysis.ipynb` | **Not built yet** |
@@ -25,7 +25,7 @@ Take-home for MulhollandAI: design an ontology for Reznar's Arcane Oddities (fan
 ```bash
 uv sync                          # install deps
 uv run python verify.py          # check Postgres
-uv run python reznar/parse_pdf.py  # Stage 1
+uv run python reznar/parser.py     # Stage 1
 uv run python reznar/extract.py    # Stage 2
 uv run ruff check . && uv run ruff format .
 ```
@@ -69,6 +69,6 @@ Single flat `items` table. One `Item` class with four optional capability compon
 
 ## Pipeline
 
-**Stage 1 (`parse_pdf.py`):** Vision model (`claude-haiku-4-5-20251001`) renders each PDF page → extracts `name/item_type/rarity/attunement/description` into `data/items_raw.json`. Sequential pages share a `CONTINUATION_HINT` for cross-page items. Model ignores decorative images; classifies first text block as new item (ALL-CAPS, 1–5 words) or continuation.
+**Stage 1 (`parser.py`):** Vision model (`claude-haiku-4-5-20251001`) renders each PDF page → extracts `name/item_type/rarity/attunement/description` into `data/items_raw.json`. Sequential pages share a `CONTINUATION_HINT` for cross-page items. Model ignores decorative images; classifies first text block as new item (ALL-CAPS, 1–5 words) or continuation.
 
 **Stage 2 (`extract.py`):** Reads `items_raw.json` → text LLM via `.with_structured_output(Item)` → writes to `items` table (`ON CONFLICT (name) DO UPDATE`). System prompt enumerates valid values for `CreatureFamily`, `DamageType`, and `EnvironmentType` so the LLM picks canonical terms; unknown values fall to `other` via `_coerce_enum_list`. Enforces: creature fields = `CreatureFamily` only; `damage_resistances` = `DamageType` only; `charges` = use count (1–20).
