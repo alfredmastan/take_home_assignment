@@ -59,7 +59,7 @@ Single flat `items` table. One `Item` class with four optional capability compon
 **Enums:**
 - `Slot`: head/neck/body/feet/finger/hand/off_hand/none
 - `Form`: ring/amulet/cloak/gown/boots/helm/mask/crown/headband/armor/shield/weapon/potion/wondrous/other
-- `Rarity`: common/uncommon/rare/very_rare/legendary/artifact/varies
+- `Rarity`: uncommon/rare/very_rare/legendary/artifact/varies
 - `Condition`: charmed/frightened/stunned/blinded/deafened/paralyzed/petrified/poisoned/exhaustion/lycanthropy/unconscious/other
 - `CreatureFamily`: undead/fiend/fey/construct/humanoid/dragon/vampire/medusa/bronze_dragon/other
 - `DamageType`: acid/bludgeoning/cold/fire/lightning/necrotic/piercing/poison/slashing/sonic/thunder/other

@@ -88,3 +88,32 @@ Noticed 2 problems in the parsed JSON. Some of the texts are misspelled and item
 
 ## [2026-05-24 9:13 PM] - Added Run Instructions for Extraction Pipeline
 - **Action**: Added `RUN.md` and `run_pipeline.py`
+
+## [2026-05-25 9:54 AM - 12:40 PM] - Assessing Data Quality and Exploring Model Options
+- **Action**: Assess data quality and make sure I understand what's the end goal of the analysis. 
+- **Action**: Explore possible approaches while checking if the data satisfy models' assumptions.
+- **Thought Process**:
+  - Based on Reznar's hypothesis, his catalog might not be priced appropriately due to items that don't belong in the their rarity. This indicates that the rarity field is noisy as some of them might be mislabeled.
+  - Since the rarity itself is an ordinal variable, we could try ordinal based models or simply treat them as different class/categories. Ordinal Logistic Regression might work, but I have to confirm whether the data satisfy the model's assumption or not.
+  - Treating it as multiclass classification problem comes with its own problem like class imbalances and losing the sense of how far the "error" is. As it treats every rarity as its own class, it assumes the error between "uncommon" and "rare" to be exact same as "uncommon" and "artifact", which is not the case.
+  - Treating them as regression problem might be worth a shot and use some sort of rounding to classify. This keeps the sense of how "far" the error between rarities.
+
+## [2026-05-25 3:12 PM - 4:05 PM] - Continue Brainstorming for Each Approach Pros and Cons
+- Things I have to consider are: small data (80 items), class imbalance, non linear features, ordinal target value, and possible noisy/mislabeled target value. 
+- With the limitations above, there are a couple of approaches I could think of:
+  - Ordinal Logistic Regression: 
+    - Natively handle ordinal values.
+    - Has strong assumptions, which could be hard to satisfy since the data is most likely to be non linear.
+  - Treat target as multiclass/categorical: 
+    - Could use tree models like Random Forest or XGB that is robust and doesn't have a lot of assumptions.
+    - No sense of how "far" the errors are and all error is considered equal.
+  - Treat target as regression/nominal: 
+    - Could also use tree models that is robust with weak assumptions.
+    - The sense of how "far" the error is preserved.
+    - Might have to add another rounding layer to classify results, which could be a weak point.
+
+## [2026-05-25 4:37 PM] - Removed "Common" Rarity
+- I overlooked the rarity and noticed "common" does not exist in the data. Thus, removed. 
+
+
+

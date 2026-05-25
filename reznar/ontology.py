@@ -57,7 +57,6 @@ class Form(StrEnum):
 
 
 class Rarity(StrEnum):
-    common = "common"
     uncommon = "uncommon"
     rare = "rare"
     very_rare = "very_rare"
@@ -158,7 +157,7 @@ RarityField = Annotated[
     Rarity,
     BeforeValidator(_coerce_enum),
     Hint(
-        "Rarity tier: common|uncommon|rare|very_rare|legendary|artifact|varies. "
+        "Rarity tier: uncommon|rare|very_rare|legendary|artifact|varies. "
         "Normalize 'very rare' → 'very_rare'. Use 'varies' if rarity depends on variant or roll."
     ),
 ]
