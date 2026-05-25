@@ -14,6 +14,8 @@ dependencies = [
     "pypdfium2>=4",
     "pillow>=10",
     "python-dotenv>=1.0",
+    "inflect>=7",
+    "spacy>=3.7",
 ]
 
 [build-system]

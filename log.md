@@ -69,3 +69,11 @@ Noticed 2 problems in the parsed JSON. Some of the texts are misspelled and item
   - Reznar mentioned that it is crucial to distinguish where the item is going to be worn. With the current design, which relies on the form classification, is prone to breaking. The form could be misclassified or does not exist (in case new item comes along) and the mapping for the slot is not robust enough. Thus letting the LLM to decide this along based on the description context would be a better option.
   - The enums for `Form` and `Condition` are prone to change if new item comes along, thus, to handle this edge case, I created a new value `other` for both enums.
 
+
+## [2026-05-24 3:14 PM – 6:03 PM] - Created Extraction Pipeline + Refine Ontology
+- **Action**: Created and ran `reznar/extract.py` which reads `items_raw.json`, invokes LLM call per item, and insert them to Postgres table.
+- **Action**: Refine prompt and normalization functions in `reznar/ontology.py` for more consistent results.
+- **Action**: Added `DamageType` in `reznar/ontology.py` to capture what type of damage it is resistant towards or what type of damage it gives, depending whether it is a defensive or offensive component.
+- **Thought Process**:
+  - From the initial run, it seems like creature types and environment types is still messy. The LLM output is quite inconsistent in terms of the naming it has decided on, despite after a couple of iterations refining the prompt. For more structured output, I think using enums with "other" to handle edge cases would be better. This way, we have much more structured output, and types that is not captured can easily be added to the enums later on. Hence, we still have the scalability and structured output we are looking for. 
+

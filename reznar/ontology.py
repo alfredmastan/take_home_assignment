@@ -10,12 +10,15 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Annotated
 
+import inflect as _inflect_mod
 from pydantic import (
     BaseModel,
     BeforeValidator,
     ConfigDict,
     Field,
 )
+
+_inflect = _inflect_mod.engine()
 
 
 # Hint carries field descriptions as Annotated metadata for LLM prompts.
@@ -81,19 +84,6 @@ class Condition(StrEnum):
     other = "other"
 
 
-# specific creature -> broad parent; both are tagged so either query matches
-CREATURE_TAXONOMY = {
-    "vampire": "undead",
-    "devil": "fiend",
-    "demon": "fiend",
-    "lycanthrope": "shapechanger",
-    "medusa": "monstrosity",
-    "hydra": "monstrosity",
-    "drow": "humanoid",
-    "orc": "humanoid",
-}
-
-
 # Helpers
 def _slug(v: str) -> str:
     return v.strip().lower().replace(" ", "_").replace("-", "_")
@@ -116,6 +106,37 @@ def _norm_str_list(v):
     return _dedup([_slug(x) if isinstance(x, str) else x for x in v])
 
 
+_ENV_BLOCKLIST = {"any_environment", "any", "all_environment", "everywhere", "all", "general"}
+
+
+def _norm_environments(v):
+    if not isinstance(v, list):
+        return v
+    out: list[str] = []
+    for x in v:
+        if not isinstance(x, str):
+            out.append(x)
+            continue
+        term = _slug(x)
+        if term and term not in _ENV_BLOCKLIST:
+            out.append(term)
+    return _dedup(out)
+
+
+_SIZE_KEYWORDS = {
+    "size",
+    "larger",
+    "smaller",
+    "bigger",
+    "tiny",
+    "small",
+    "medium",
+    "large",
+    "huge",
+    "gargantuan",
+}
+
+
 def _norm_creatures(v):
     if not isinstance(v, list):
         return v
@@ -124,15 +145,19 @@ def _norm_creatures(v):
         if not isinstance(raw, str):
             out.append(raw)
             continue
-        # strip parentheticals: "fiend (devil)" -> "fiend"; keep the inner term too
-        base = _slug(raw.split("(")[0])
-        inner = _slug(raw[raw.find("(") + 1 : raw.find(")")]) if "(" in raw and ")" in raw else None
-        for term in (base, inner):
-            if not term:
-                continue
-            out.append(term)
-            if term in CREATURE_TAXONOMY:
-                out.append(CREATURE_TAXONOMY[term])
+        # strip parentheticals, keep only the base term
+        base_raw = raw.split("(")[0].strip()
+        singular = _inflect.singular_noun(base_raw) or base_raw
+        term = _slug(singular)
+        if term.endswith("_damage"):
+            term = term[: -len("_damage")]
+        if not term:
+            continue
+        # size-category phrases (e.g. "creature_at_least_one_size_category_smaller") → "any"
+        words = set(term.split("_"))
+        if words & _SIZE_KEYWORDS:
+            term = "any"
+        out.append(term)
     return _dedup(out)
 
 
@@ -158,17 +183,30 @@ CreatureList = Annotated[
     list[str],
     BeforeValidator(_norm_creatures),
     Hint(
-        "Creature types as lowercase slugs. Include both the specific type and its parent category: "
-        "vampire → also undead; devil/demon → also fiend; lycanthrope → also shapechanger; "
-        "medusa/hydra → also monstrosity; drow/orc → also humanoid."
+        "Creature or creature-family names as lowercase slugs. Use the broadest applicable family, not a specific named creature: "
+        "e.g. a named undead creature → 'undead'; a named fiery elemental → 'elemental'; a specific dragon species → 'dragon'. "
+        "For size-relative references (e.g. 'creature at least one size smaller') use 'any'. "
+        "Non-creature-type strings (e.g. 'armored targets', 'targets using a shield') must NOT appear here — put those in special_effects."
+    ),
+]
+DamageTypeList = Annotated[
+    list[str],
+    BeforeValidator(_norm_str_list),
+    Hint(
+        "Damage types the item grants resistance or immunity to, as lowercase slugs. "
+        "Examples: fire/cold/lightning/acid/necrotic/radiant/thunder/poison/psychic/bludgeoning/piercing/slashing. "
+        "Only physical or elemental damage categories — never creature names here."
     ),
 ]
 EnvironmentList = Annotated[
     list[str],
-    BeforeValidator(_norm_str_list),
+    BeforeValidator(_norm_environments),
     Hint(
-        "Environments as lowercase slugs where the item is enhanced or relevant. "
-        "Examples: underwater/forest/airborne/darkness/daylight/cold/desert/urban/underground."
+        "Terrain, location, or condition names where this item behaves differently (gains bonuses, only functions, "
+        "or has altered effects). Examples: underwater/forest/airborne/darkness/daylight/cold/desert/urban/underground. "
+        "Each entry must be a location/terrain/condition noun — NOT a material adjective (wooden, stone, iron, crystal). "
+        "If the description says 'in wooden structures', use the terrain type (dungeon, forest) not the material. "
+        "Leave empty if the item works the same in any environment."
     ),
 ]
 SlotField = Annotated[
@@ -176,7 +214,7 @@ SlotField = Annotated[
     BeforeValidator(_coerce_enum),
     Hint(
         "Where on the body this item is worn or carried: "
-        "head (hat/helm/mask/crown/tiara/circlet/headband/cap), "
+        "head (hat/helm/mask/face/crown/tiara/circlet/headband/cap — anything worn on the head or face), "
         "neck (amulet/pendant/necklace/collar), "
         "body (cloak/armor/robe/gown/vest/coat), "
         "feet (boots/shoes/sandals/slippers), "
@@ -222,12 +260,17 @@ class Defense(_Base):
         default=[], description="Conditions the wearer is immune to while using this item."
     )
     resistances_against: CreatureList = Field(
-        default=[], description="Creature types this item grants resistance or protection against."
+        default=[],
+        description="Creature families this item grants resistance or protection against. ONLY creature names — never damage types.",
+    )
+    damage_resistances: DamageTypeList = Field(
+        default=[],
+        description="Damage types (fire, cold, lightning, acid, necrotic, etc.) the item grants resistance or immunity to. ONLY damage type names — never creature names.",
     )
 
 
 class Environment(_Base):
-    """Set only if a specific setting enhances the item's function or grants bonuses."""
+    """Set if the item has environment-specific behavior — bonuses granted in a setting OR effects that only function in specific environments."""
 
     strong_in: EnvironmentList = Field(
         default=[],
@@ -242,9 +285,9 @@ class Limitations(_Base):
         default=None, description="Number of charges the item starts with; None if unlimited use."
     )
     cursed: bool = False
-    drawback: str | None = Field(
-        default=None,
-        description="Freetext penalty not captured by cursed/charges (e.g. 'reduces Strength by 2 while worn').",
+    drawbacks: list[str] = Field(
+        default=[],
+        description="Penalties not captured by cursed/charges, as short phrases (e.g. 'reduces Strength by 2 while worn', 'causes blindness in sunlight').",
     )
 
 
