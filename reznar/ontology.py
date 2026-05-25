@@ -10,15 +10,12 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Annotated
 
-import inflect as _inflect_mod
 from pydantic import (
     BaseModel,
     BeforeValidator,
     ConfigDict,
     Field,
 )
-
-_inflect = _inflect_mod.engine()
 
 
 # Hint carries field descriptions as Annotated metadata for LLM prompts.
@@ -84,16 +81,43 @@ class Condition(StrEnum):
     other = "other"
 
 
+class CreatureFamily(StrEnum):
+    undead = "undead"
+    fiend = "fiend"
+    fey = "fey"
+    construct = "construct"
+    humanoid = "humanoid"
+    dragon = "dragon"
+    vampire = "vampire"
+    medusa = "medusa"
+    bronze_dragon = "bronze_dragon"
+    other = "other"
+
+
+class DamageType(StrEnum):
+    acid = "acid"
+    bludgeoning = "bludgeoning"
+    cold = "cold"
+    fire = "fire"
+    lightning = "lightning"
+    necrotic = "necrotic"
+    piercing = "piercing"
+    poison = "poison"
+    slashing = "slashing"
+    sonic = "sonic"
+    thunder = "thunder"
+    other = "other"
+
+
+class EnvironmentType(StrEnum):
+    forest = "forest"
+    underwater = "underwater"
+    other = "other"
+
+
 # Helpers
 def _slug(v: str) -> str:
     return v.strip().lower().replace(" ", "_").replace("-", "_")
-
-
-def _dedup(items: list[str]) -> list[str]:
-    seen: dict[str, None] = {}
-    for it in items:
-        seen.setdefault(it, None)
-    return list(seen)
 
 
 def _coerce_enum(v):
@@ -103,62 +127,30 @@ def _coerce_enum(v):
 def _norm_str_list(v):
     if not isinstance(v, list):
         return v
-    return _dedup([_slug(x) if isinstance(x, str) else x for x in v])
-
-
-_ENV_BLOCKLIST = {"any_environment", "any", "all_environment", "everywhere", "all", "general"}
-
-
-def _norm_environments(v):
-    if not isinstance(v, list):
-        return v
-    out: list[str] = []
+    seen: dict[str, None] = {}
     for x in v:
-        if not isinstance(x, str):
-            out.append(x)
-            continue
-        term = _slug(x)
-        if term and term not in _ENV_BLOCKLIST:
-            out.append(term)
-    return _dedup(out)
+        term = _slug(x) if isinstance(x, str) else x
+        seen.setdefault(term, None)
+    return list(seen)
 
 
-_SIZE_KEYWORDS = {
-    "size",
-    "larger",
-    "smaller",
-    "bigger",
-    "tiny",
-    "small",
-    "medium",
-    "large",
-    "huge",
-    "gargantuan",
-}
+def _coerce_enum_list(enum_cls):
+    def _validate(v):
+        if not isinstance(v, list):
+            return v
+        seen, out = set(), []
+        for x in v:
+            slug = _slug(x) if isinstance(x, str) else x
+            try:
+                val = enum_cls(slug)
+            except ValueError:
+                val = enum_cls.other
+            if val not in seen:
+                seen.add(val)
+                out.append(val)
+        return out
 
-
-def _norm_creatures(v):
-    if not isinstance(v, list):
-        return v
-    out: list[str] = []
-    for raw in v:
-        if not isinstance(raw, str):
-            out.append(raw)
-            continue
-        # strip parentheticals, keep only the base term
-        base_raw = raw.split("(")[0].strip()
-        singular = _inflect.singular_noun(base_raw) or base_raw
-        term = _slug(singular)
-        if term.endswith("_damage"):
-            term = term[: -len("_damage")]
-        if not term:
-            continue
-        # size-category phrases (e.g. "creature_at_least_one_size_category_smaller") → "any"
-        words = set(term.split("_"))
-        if words & _SIZE_KEYWORDS:
-            term = "any"
-        out.append(term)
-    return _dedup(out)
+    return _validate
 
 
 # Annotated field types
@@ -180,32 +172,31 @@ ConditionList = Annotated[
     ),
 ]
 CreatureList = Annotated[
-    list[str],
-    BeforeValidator(_norm_creatures),
+    list[CreatureFamily],
+    BeforeValidator(_coerce_enum_list(CreatureFamily)),
     Hint(
-        "Creature or creature-family names as lowercase slugs. Use the broadest applicable family, not a specific named creature: "
-        "e.g. a named undead creature → 'undead'; a named fiery elemental → 'elemental'; a specific dragon species → 'dragon'. "
-        "For size-relative references (e.g. 'creature at least one size smaller') use 'any'. "
-        "Non-creature-type strings (e.g. 'armored targets', 'targets using a shield') must NOT appear here — put those in special_effects."
+        "Creature or creature-family names. Use ONLY these values: "
+        "undead/fiend/fey/construct/humanoid/dragon/vampire/medusa/bronze_dragon/other. "
+        "Use the broadest applicable family (e.g. a named undead creature → 'undead', a specific dragon species → 'dragon'). "
+        "Use 'other' only when no listed family applies. "
+        "Non-creature references (e.g. 'armored targets') must NOT appear here — put those in special_effects."
     ),
 ]
 DamageTypeList = Annotated[
-    list[str],
-    BeforeValidator(_norm_str_list),
+    list[DamageType],
+    BeforeValidator(_coerce_enum_list(DamageType)),
     Hint(
-        "Damage types the item grants resistance or immunity to, as lowercase slugs. "
-        "Examples: fire/cold/lightning/acid/necrotic/radiant/thunder/poison/psychic/bludgeoning/piercing/slashing. "
-        "Only physical or elemental damage categories — never creature names here."
+        "Damage types the item grants resistance or immunity to. Use ONLY these values: "
+        "acid/bludgeoning/cold/fire/lightning/necrotic/piercing/poison/slashing/sonic/thunder/other. "
+        "Never creature names here."
     ),
 ]
 EnvironmentList = Annotated[
-    list[str],
-    BeforeValidator(_norm_environments),
+    list[EnvironmentType],
+    BeforeValidator(_coerce_enum_list(EnvironmentType)),
     Hint(
-        "Terrain, location, or condition names where this item behaves differently (gains bonuses, only functions, "
-        "or has altered effects). Examples: underwater/forest/airborne/darkness/daylight/cold/desert/urban/underground. "
-        "Each entry must be a location/terrain/condition noun — NOT a material adjective (wooden, stone, iron, crystal). "
-        "If the description says 'in wooden structures', use the terrain type (dungeon, forest) not the material. "
+        "Terrain or location where this item gains bonuses or has altered effects. Use ONLY these values: "
+        "forest/underwater/other. "
         "Leave empty if the item works the same in any environment."
     ),
 ]

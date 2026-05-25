@@ -71,9 +71,17 @@ Noticed 2 problems in the parsed JSON. Some of the texts are misspelled and item
 
 
 ## [2026-05-24 3:14 PM – 6:03 PM] - Created Extraction Pipeline + Refine Ontology
-- **Action**: Created and ran `reznar/extract.py` which reads `items_raw.json`, invokes LLM call per item, and insert them to Postgres table.
+- **Action**: Created and ran `reznar/extract.py` which reads `items_raw.json`, invokes LLM call per item using the Ontology design, and insert them to Postgres table.
 - **Action**: Refine prompt and normalization functions in `reznar/ontology.py` for more consistent results.
-- **Action**: Added `DamageType` in `reznar/ontology.py` to capture what type of damage it is resistant towards or what type of damage it gives, depending whether it is a defensive or offensive component.
+- **Action**: Added `DamageTypeList` in `reznar/ontology.py` to capture what type of damage it is resistant towards or what type of damage it gives, depending whether it is a defensive or offensive component.
 - **Thought Process**:
   - From the initial run, it seems like creature types and environment types is still messy. The LLM output is quite inconsistent in terms of the naming it has decided on, despite after a couple of iterations refining the prompt. For more structured output, I think using enums with "other" to handle edge cases would be better. This way, we have much more structured output, and types that is not captured can easily be added to the enums later on. Hence, we still have the scalability and structured output we are looking for. 
 
+
+## [2026-05-24 6:36 PM – 7:03 PM] - Enum Constraints for Creature, Damage Type, and Environment Fields
+- **Action**: Added `CreatureFamily`, `DamageType`, and `EnvironmentType` enums to `reznar/ontology.py`, replacing the free-string `list[str]` fields for `effective_against`, `resistances_against`, `damage_resistances`, and `strong_in`.
+- **Action**: Removed normalization functions and other helper functions.
+- **Action**: Re-ran `reznar/extract.py` for quality check.
+- **Thought Process**:
+  - LLM could output anything in any format and any names, which makes it very difficult to handle all cases. For example, it may classify a human as "humanoid", or simply "human", or "humans", or "living_being", or even all of them in different items. It is much easier to handle all cases for types, in this case, creature types.
+  - On the other hand, we will also get a more structured output that make filtering much more easier and consistent.

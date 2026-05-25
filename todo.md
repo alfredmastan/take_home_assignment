@@ -30,26 +30,23 @@
   - **Identity fields:** `name`, `slot: Slot` (LLM-extracted — where worn/carried), `form: Form`
     (LLM-extracted — physical object type), `rarity: Rarity`, `req_attunement: bool`
   - `slot` and `form` are independent; LLM extracts both from item name + description
-  - **`Offense`**: `attack_damage_bonus: int`, `effective_against: list[str]`
-  - **`Defense`**: `ac_bonus: int`, `condition_immunities: list[Condition]`, `resistances_against: list[str]` (creature families only), `damage_resistances: list[str]` (damage types only)
-  - **`Environment`**: `strong_in: list[str]`
+  - **`Offense`**: `attack_damage_bonus: int`, `effective_against: list[CreatureFamily]`
+  - **`Defense`**: `ac_bonus: int`, `condition_immunities: list[Condition]`, `resistances_against: list[CreatureFamily]`, `damage_resistances: list[DamageType]`
+  - **`Environment`**: `strong_in: list[EnvironmentType]`
   - **`Limitations`**: `charges: int | None`, `cursed: bool`, `drawbacks: list[str]`
   - **Catch-all:** `special_effects: list[str]`
   - **Enums:** `Slot` (head/neck/body/feet/finger/hand/off_hand/none — fixed, exhaustive),
     `Form` (…/wondrous/other), `Rarity`, `Condition` (…/other)
-  - **Normalizers:** `_coerce_enum`; `_norm_str_list`; `_norm_creatures` (strip parentheticals, singularize,
-    filter size-category phrases → `"any"`); `_norm_environments` (slug-only — no lemmatization, avoids
-    spaCy corruption of adjectives like "wooden"). Creature family generalization handled by LLM prompt, not a
-    hardcoded taxonomy — shop is a generic fantasy setting, not a specific game system
+  - **Enums with other:** `CreatureFamily`, `DamageType`, `EnvironmentType` — all unknown LLM values fall to `other` via `_coerce_enum_list` factory; no complex normalization needed
+  - **Normalizers:** `_coerce_enum` (scalar enums); `_norm_str_list` (condition list dedup); `_coerce_enum_list(enum_cls)` (generic enum-list factory replacing `_norm_creatures` / `_norm_environments`)
 - [x] Create `reznar/extract.py` — reads `data/items_raw.json`, populates Postgres via `db.py`
   - Load API key from `.env` via `python-dotenv`; analysis model from `reznar/config.py`
   - `ChatAnthropic(model=ANALYSIS_MODEL).with_structured_output(Item)` per item; carry `name`/`rarity`/
     `req_attunement` through, LLM extracts `slot`/`form` and capability components. 80 items — simple loop
   - `CREATE TABLE IF NOT EXISTS items (...)`: scalars→text/int/bool, lists→`text[]`, `name` PK,
     capability component fields nullable. Insert via `model_dump()`; `ON CONFLICT (name) DO UPDATE`
-  - System prompt enforces: creature fields = creature/family names only; `damage_resistances` = damage
-    type names only; `charges` = use count (1–20), not capacity measurements; `strong_in` = terrain/location/
-    condition nouns only, never material adjectives (wooden, stone, iron)
+  - System prompt enumerates valid enum values for creature, damage type, and environment fields so LLM picks canonical terms; unknown values fall to `other` via validator
+  - System prompt enforces: `charges` = use count (1–20), not capacity measurements
   - System prompt notes `wondrous item` is a D&D catch-all (not a physical form) — LLM must infer `slot`/`form` from item name and description
   - Retry on `ValidationError`: up to 2 attempts, sending parse error back as correction prompt
 

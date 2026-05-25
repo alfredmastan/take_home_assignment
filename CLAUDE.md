@@ -50,9 +50,9 @@ with db.connect() as conn, conn.cursor() as cur:
 Single flat `items` table. One `Item` class with four optional capability components (each `None` if unused):
 
 - **Identity:** `name`, `slot: Slot`, `form: Form`, `rarity: Rarity`, `req_attunement: bool`
-- **`Offense`** (attacks/effectiveness): `attack_damage_bonus: int`, `effective_against: list[str]`
-- **`Defense`** (damage reduction/immunity): `ac_bonus: int`, `condition_immunities`, `resistances_against`, `damage_resistances`
-- **`Environment`** (situational boosts): `strong_in: list[str]`
+- **`Offense`** (attacks/effectiveness): `attack_damage_bonus: int`, `effective_against: list[CreatureFamily]`
+- **`Defense`** (damage reduction/immunity): `ac_bonus: int`, `condition_immunities: list[Condition]`, `resistances_against: list[CreatureFamily]`, `damage_resistances: list[DamageType]`
+- **`Environment`** (situational boosts): `strong_in: list[EnvironmentType]`
 - **`Limitations`** (charges/curse/drawbacks): `charges: int | None`, `cursed: bool`, `drawbacks: list[str]`
 - **`special_effects: list[str]`** — catch-all for anything unstructured
 
@@ -61,11 +61,14 @@ Single flat `items` table. One `Item` class with four optional capability compon
 - `Form`: ring/amulet/cloak/gown/boots/helm/mask/crown/headband/armor/shield/weapon/potion/wondrous/other
 - `Rarity`: common/uncommon/rare/very_rare/legendary/artifact/varies
 - `Condition`: charmed/frightened/stunned/blinded/deafened/paralyzed/petrified/poisoned/exhaustion/lycanthropy/unconscious/other
+- `CreatureFamily`: undead/fiend/fey/construct/humanoid/dragon/vampire/medusa/bronze_dragon/other
+- `DamageType`: acid/bludgeoning/cold/fire/lightning/necrotic/piercing/poison/slashing/sonic/thunder/other
+- `EnvironmentType`: forest/underwater/other
 
-`slot` and `form` are LLM-inferred independently. `wondrous` = held/used with no wearable slot. Creature family generalization done by LLM via prompt, not hardcoded taxonomy (generic fantasy shop, not D&D).
+`slot` and `form` are LLM-inferred independently. `wondrous` = held/used with no wearable slot. All enum lists use `other` to gracefully handle values outside the known vocabulary.
 
 ## Pipeline
 
 **Stage 1 (`parse_pdf.py`):** Vision model (`claude-haiku-4-5-20251001`) renders each PDF page → extracts `name/item_type/rarity/attunement/description` into `data/items_raw.json`. Sequential pages share a `CONTINUATION_HINT` for cross-page items. Model ignores decorative images; classifies first text block as new item (ALL-CAPS, 1–5 words) or continuation.
 
-**Stage 2 (`extract.py`):** Reads `items_raw.json` → text LLM via `.with_structured_output(Item)` → writes to `items` table (`ON CONFLICT (name) DO UPDATE`). Enforces: creature fields = creature names only; `damage_resistances` = damage types only; `charges` = use count (1–20); `strong_in` entries = location/terrain/condition nouns only (never material adjectives like wooden/stone).
+**Stage 2 (`extract.py`):** Reads `items_raw.json` → text LLM via `.with_structured_output(Item)` → writes to `items` table (`ON CONFLICT (name) DO UPDATE`). System prompt enumerates valid values for `CreatureFamily`, `DamageType`, and `EnvironmentType` so the LLM picks canonical terms; unknown values fall to `other` via `_coerce_enum_list`. Enforces: creature fields = `CreatureFamily` only; `damage_resistances` = `DamageType` only; `charges` = use count (1–20).

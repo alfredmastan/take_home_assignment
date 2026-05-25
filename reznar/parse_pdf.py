@@ -6,12 +6,11 @@ import base64
 import io
 import json
 from pathlib import Path
+from typing import Annotated
 
 import pypdfium2
 from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import HumanMessage
-from typing import Annotated
-
 from pydantic import BaseModel, BeforeValidator
 
 from reznar.config import VISION_MODEL
@@ -43,7 +42,7 @@ PROMPT = (
 )
 
 CONTINUATION_HINT = (
-    "\n\nCONTEXT: The previous page ended partway through an item named \"{name}\". "
+    '\n\nCONTEXT: The previous page ended partway through an item named "{name}". '
     "The last text extracted from that item was:\n"
     "  ...{tail}\n\n"
     "Use this three-step algorithm to decide whether this page continues that item:\n\n"
@@ -54,10 +53,10 @@ CONTINUATION_HINT = (
     "    • If it is an ALL-CAPS or bold short phrase (1–5 words, no trailing punctuation) → "
     "it is a NEW item name. Set first_item_is_continuation=false.\n"
     "    • If it is plain body/paragraph prose (not a bold/ALL-CAPS heading) → it is a "
-    "continuation of \"{name}\". Set first_item_is_continuation=true and transcribe ALL text "
+    'continuation of "{name}". Set first_item_is_continuation=true and transcribe ALL text '
     "on this page that belongs to that item; do not skip any paragraphs.\n\n"
     "CRITICAL RULE: An ALL-CAPS or bold short phrase is ALWAYS a new item name. "
-    "Never absorb it into \"{name}\"'s description regardless of surrounding images or layout."
+    'Never absorb it into "{name}"\'s description regardless of surrounding images or layout.'
 )
 
 
@@ -115,7 +114,9 @@ def main() -> None:
     for i, page in enumerate(doc):
         try:
             image_bytes = _page_to_jpeg_bytes(page)
-            page_result = _extract_page(llm_structured, image_bytes, prev_item=carry) # give the LLM the last item from the previous page, if any, so it can decide whether this page continues it
+            page_result = _extract_page(
+                llm_structured, image_bytes, prev_item=carry
+            )  # give the LLM the last item from the previous page, if any, so it can decide whether this page continues it
         except Exception as exc:
             print(f"Page {i + 1} ERROR: {exc}")
             continue
@@ -129,8 +130,10 @@ def main() -> None:
         if items:
             if carry is not None:
                 all_items.append(carry)
-            all_items.extend(items[:-1]) # grab all but the last item, which may be continued on the next page
-            carry = items[-1] # store the last item for potential continuation on the next page
+            all_items.extend(
+                items[:-1]
+            )  # grab all but the last item, which may be continued on the next page
+            carry = items[-1]  # store the last item for potential continuation on the next page
 
         cont = " (continuation)" if page_result.first_item_is_continuation else ""
         print(f"Page {i + 1}/{n_pages}: {len(page_result.items)} item(s){cont}")
