@@ -89,7 +89,7 @@ Noticed 2 problems in the parsed JSON. Some of the texts are misspelled and item
 ## [2026-05-24 9:13 PM] - Added Run Instructions for Extraction Pipeline
 - **Action**: Added `RUN.md` and `run_pipeline.py`
 
-## [2026-05-25 9:54 AM - 12:40 PM] - Assessing Data Quality and Exploring Model Options
+## [2026-05-25 9:54 AM - 12:40 PM] - Assessing Data Quality and Exploring Possible Approaches
 - **Action**: Assess data quality and make sure I understand what's the end goal of the analysis. 
 - **Action**: Explore possible approaches while checking if the data satisfy models' assumptions.
 - **Thought Process**:
@@ -115,5 +115,10 @@ Noticed 2 problems in the parsed JSON. Some of the texts are misspelled and item
 ## [2026-05-25 4:37 PM] - Removed "Common" Rarity
 - I overlooked the rarity and noticed "common" does not exist in the data. Thus, removed. 
 
-
+## [2026-05-25 4:13 PM - 5:03 PM] - Selecting and Transforming Features for Analysis
+- **Thought Process**:
+  - Intuitively, field like form and slot are not necessarily meaningful for rarity. Any form could have any rarity and can be worn anywhere. Thus, will not be used for prediction.
+  - On the other hand, for fields that are lists, encoding each types would also not be beneficial or reasonable since some of them are very specific and free form texts. So, using just the length of the lists would make more sense and enough to capture the bigger picture of each items. The model would also handle numeric lengths better than categorical that can lead to curse of dimensionality.
+  - Another thing to mention is that, there is one item "Pouch of False Coins" that happens to have multiple rarity (varies) depending on the coin types. This is not captured in the parser and dropped in prediction as the difference between its rarities is overly specific. Splitting them into seperate rows/items would only cause more issues in the long run, like breaking the i.i.d. (independent and identicaly distributed) assumption used in many models and statistics.
+  - To handle multicollinearity that can mess with stability, a simple Pearson's correlation filtering is used.
 
