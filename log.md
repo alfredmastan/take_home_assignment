@@ -94,6 +94,7 @@ Noticed 2 major problems in the parsed JSON after a couple of runs and manually 
 
 ## [2026-05-25 3:12 PM - 4:05 PM] - Planned 3 Approaches with Pros and Cons
 - Things I have to consider are: small data (80 items), class imbalance, non linear features, ordinal target value, and possible noisy/mislabeled target value. 
+- Also, because of the small amount of data we have, deep learning is ruled out since it would overfit. Hence, we start with simple models and only add complexity if needed.
 - With the limitations above, there are a couple of approaches I could think of:
   - Ordinal Logistic Regression: 
     - Natively handle ordinal values.
@@ -121,8 +122,8 @@ Noticed 2 major problems in the parsed JSON after a couple of runs and manually 
 - **Thought Process**:
   - Ordinal Logistic Regression assumption of proportional odds didn't seem to be satisfied here. However, since the target label itself could be noisy and mislabeled, it is difficult to tell whether the assumptions are truly violated or not.
   - The multiclass Random Forest test confirmed the same. Using out-of-fold stratified k-fold (k=4), it looks like the model is doing poorly. But again, it is hard to determine what actually causes it. It could be due to the fact that the model wasn't able to capture the patterns and didn't learn well, or simply because the items are mislabeled.
-  - This indicates that relying on one model is a bad idea. To better handle the noisy labeling is to do an ensemble across models with different architectures.
-  - Additionally, framing the problem towards regression instead of classification allows more refined results between models and preserve the distance in terms of errors. 
+  - This also indicates that relying on one model is a bad idea. To better handle the noisy labeling is to do an ensemble across models with different architectures.
+  - Additionally, framing the problem towards regression instead of classification seems to allow more refined results between models and preserve the distance in terms of errors. 
 
 
 ## [2026-05-26 3:23 PM – 4:49 PM] - RF + Ridge Regression Ensemble Approach
@@ -138,6 +139,22 @@ Noticed 2 major problems in the parsed JSON after a couple of runs and manually 
   - Also, since we are using Ridge Regression, VIF filtering is added after correlation filtering to have more robust multicollinearity handling.
 - **Findings**:
   - Both models seem to have real signal. The Ridge Regression and RF model perform similarly on every metric (macro-MAE 0.695 vs 0.743, Spearman +0.531 vs +0.560, QWK 0.553 vs 0.550, ±1-acc 0.924 vs 0.949).
-  - RF prediction range is compressed to [0.39, 3.28], which means it cannot reach `legendary` (3) or `artifact` (4). While Ridge prediction range is [0.40, 5.45] that can reach the top but over extrapolate over the max of 4.
+  - RF prediction range is compressed to [0.39, 3.28], which means it cannot reach `artifact` (4). While Ridge prediction range is [0.40, 5.45] that can reach the top but over extrapolate over the max of 4.
   - The two "drawbacks" seems to complement each other. The RF smooths the tails down while the Ridge extrapolates them up. Thus, averaging them together gives a middle estimate that's reasonable in the bulk (`rare` and `very_rare`) but noisy at the extremes (`uncommon`, `legendary`, and `artifact`).
   - This prediction is fundamentally limited by data itself, where we have 9 legendary and 4 artifact items, which is not enough to learn a sharp boundary at the edges regardless of the model. 
+
+
+## [2026-05-27 9:50 AM – 1:38 PM] - Model Comparison Across Framings
+- **Action:** Added ordinal LR (`mord.LogisticAT`) as a quick sanity check and third opinion alongside the RF classifier and RF + Ridge regressors.
+- **Action:** Compared all framings against a mean baseline under `RepeatedStratifiedKFold` of 4×5 (4 fold repeated 5x) and weighting to handle imbalance, which then scored with ordinal-aware metrics (macro-MAE, QWK, Spearman, ±1-acc).
+- **Action:** Ran an in-depth per-class diagnostic with signed residual (pred − true) and mean prediction per class to expose each model's directional bias and how well it handle the imbalance.
+- **Thought Process**:
+  - Since the proportional-odds check was inconclusive (we can't tell a true violation from noisy labels), I decided to fit the Oridinal Logistic Regression `LogisticAT` as a quick sanity check and third opinion. Similar to the case with Ridge regression, we are more focused on the predicitve power than inference, hence, there's no harm in trying to fit the model in case it works well despite failing to meet the assumptions. However, a more in-depth validation and diagnostic is required to make sure it actually captures a signal.
+  - So, to have a more clear picture on the model predictions themselves, I added per-class signed residual and mean prediction, which enables us to see which rarity the model over or under predict. Additionally, this also shows how well the weighting works against the class imbalance.
+  - As a final comparison across framings and models, I train and evaluate them once more with using the same method `RepeatedStratifiedKFold` and the same weighting of `1/N`. I also added a baseline model that always predicts the average rarity as a sanity check that ensure each model is actually learning and not just fitting through the noise.
+  - Since OLR and RF classification models outputs class and probabilities instead of continuous variable like regression, I calculated the expected value using the probabilities to make them comparable with other regression models. However, this comes with a caveat that it introduces bias as it depends on how confident the model in its prediction while also naturally pulls the predictions towards the average. Despite that, it could still gives us a rough idea in how well the models fit in comparison to regression models.
+- **Findings**:
+  - All models beat the baseline. RF regression, Ridge, and OLR carry the most signal.
+  - RF classification seems to underperform against every other models across all metrics. The per-class mean prediction reveals that the model struggle to cover lower and upper tiers like uncommon, legendary, and artifact. The signed residual also reveals that the predictions for those minority tiers are being biased towards the majority tiers (rare and very rare). 
+  - On the other hand, the OLR performs as good as the other regression models despite using expected value for its metrics. The per-class signed residual and mean prediction reveals that it is quite confident in the predictions, covers a good range, and handle the imbalances quite well. It performs similarly to the ridge regression model, it handled the top rarities (legendary and artifact) predictions quite well, but underperform in the lower rarity (uncommon) range.
+  - However, RF regression model is the complete opposite from OLR and Ridge. It underperformed in top rarities predictions and handled the lower rarity predictions better. We can see it from the uncommon rarity mean prediction and signed residual that it reaches lower value in average compared to OLR and Ridge, and struggles to reach the artifact rarity. This relates to the previous test where the prediction range is compressed to [0.39, 3.28], indicating it is struggling in predicting the top range of rarities. Despite that, the metrics shows that it is comparable with the OLR and Ridge models. Hence, the OLR, Ridge, and RF regression models are the most reasonable models to ensemble together as they complement each other weaknesses.
