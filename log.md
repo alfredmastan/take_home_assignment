@@ -28,15 +28,15 @@
   - `MAX_WORKERS=5` is used in respect to Haiku's rate limits. 
 
 ## [2026-05-23 2:47 PM - 6:00 PM] - OCR Quality & Multi-page Item Description Handling
-Noticed 2 problems in the parsed JSON. Some of the texts are misspelled and item descriptions are being cut off. Detailed key problem and action taken explained below:
+Noticed 2 major problems in the parsed JSON after a couple of runs and manually cross checking it. Some of the texts are misspelled and item descriptions are being cut off. Detailed key problem and action taken explained below:
 
 ### OCR quality
 - **Problem**: render scale=2.0 seems too low, which makes the model misread characters, like "Ring of Elven Lords" being read as "Ring of Eleven Lords".
 - **Fix**: Increased render scale to 3.0 and switched from PNG to JPEG (quality=85) to compress and stay under Anthropic's 5 MB image limit (~700–850 KB per page vs ~5.6 MB as PNG).
 
 ### Handling Multi-page item description
-- **Problem**: Some items have descriptions more than 1 page, and it was being truncated to only the first page. To ensure continuation, I include the context from the previous page, thus, it has to be run sequentially. The parallel processing implemented before is reverted. 
-- **Fix**: Switched to sequential page processing with a `carry` variable holding the last item pending until it determines the next page does not contain any continuation. A `CONTINUATION_HINT` is injected into the prompt containing the item name and last 200 characters of its description as a context, so the model knows exactly where to resume. 
+- **Problem**: Some items have descriptions more than 1 page, and it was being truncated to only the first page. Some of them are missing the first 1-3 paragraphs. 
+- **Fix**: Refined the main prompt to be more specific in terms of detecting the text for items.witched to sequential page processing with a `carry` variable holding the last item pending until it determines the next page does not contain any continuation. A `CONTINUATION_HINT` is injected into the prompt containing the item name and last 200 characters of its description as a context, so the model knows exactly where to resume. 
 
 
 ## [2026-05-23 6:35 PM - 11:07 PM] - Created Initial Ontology Design
@@ -86,8 +86,6 @@ Noticed 2 problems in the parsed JSON. Some of the texts are misspelled and item
 - **Action**: Added `RUN.md` and `run_pipeline.py`
 
 ## [2026-05-25 9:54 AM - 12:40 PM] - Assessing Data Quality and Exploring Possible Approaches
-- **Action**: Assess data quality and make sure I understand what's the end goal of the analysis. 
-- **Action**: Explore possible approaches while checking if the data satisfy models' assumptions.
 - **Thought Process**:
   - Based on Reznar's hypothesis, his catalog might not be priced appropriately due to items that don't belong in their rarity. This indicates that the rarity field is noisy as some of them might be mislabeled.
   - Since the rarity itself is an ordinal variable, we could try ordinal based models or simply treat them as different class/categories. Ordinal Logistic Regression might work, but I have to confirm whether the data satisfy the model's assumption or not.
@@ -110,17 +108,36 @@ Noticed 2 problems in the parsed JSON. Some of the texts are misspelled and item
 
 
 ## [2026-05-25 4:13 PM - 5:03 PM] - Selecting and Transforming Features for Analysis
-- **Action:** Removed "common" from `Rarity` enum as it does not exist in the data.
+- **Action:** Transformed features from postgres database to be ready for analysis 
+- **Action:** Removed `common` from `Rarity` enum as it does not exist in the extracted data.
 - **Thought Process**:
   - Intuitively, fields like form and slot are not necessarily meaningful for rarity. Any form could have any rarity and can be worn anywhere. Thus, will not be used for prediction.
-  - On the other hand, for fields that are lists, encoding each types would also not be beneficial or reasonable since some of them are very specific and free form texts. So, using just the length of the lists would make more sense and enough to capture the bigger picture of each items. Having numeric features is also beneficial compared to categorical features, which can lead to curse of dimensionality.
-  - Another thing to mention is that, there is one item "Pouch of False Coins" that happens to have multiple rarity (varies) depending on the coin types. This is not captured in the parser and dropped in prediction as the difference between its rarities is overly specific. Splitting them into separate rows/items would only cause more issues in the long run, like breaking the i.i.d. (independent and identically distributed) assumption used in many models and statistics.
+  - On the other hand, for fields that are lists, encoding each types would also not be reasonable since most of them are sparse, very specific, and free form texts. So, using just the length of the lists would make more sense and enough to capture the bigger picture of each items. 
+  - Another thing to mention is that, there is one item "Pouch of False Coins" that happens to have multiple rarity (varies) depending on the coin types. This is not captured in the parser and dropped in prediction as the difference between its rarities is overly specific. Splitting them into separate rows/items would only cause more issues in the long run and not worth the complexity.
   - To handle multicollinearity that can mess with stability, a simple Pearson's correlation filtering is used.
 
 ## [2026-05-25 6:03 PM - 9:06 PM] - Testing Approaches and Models' Assumptions
 - **Action:** Tested the Ordinal Logistic Regression and Random Forest (multiclass) approach. 
 - **Thought Process**:
   - Ordinal Logistic Regression assumption of proportional odds didn't seem to be satisfied here. However, since the target label itself could be noisy and mislabeled, it is difficult to tell whether the assumptions are truly violated or not.
-  - The multiclass Random Forest test confirmed the same. While the model looks like it's doing poorly, it is hard to determine what actually causes it. It could be due to the fact that the model wasn't able to capture the patterns and didn't learn well, or simply because the items are mislabeled.
+  - The multiclass Random Forest test confirmed the same. Using out-of-fold stratified k-fold (k=4), it looks like the model is doing poorly. But again, it is hard to determine what actually causes it. It could be due to the fact that the model wasn't able to capture the patterns and didn't learn well, or simply because the items are mislabeled.
   - This indicates that relying on one model is a bad idea. To better handle the noisy labeling is to do an ensemble across models with different architectures.
   - Additionally, framing the problem towards regression instead of classification allows more refined results between models and preserve the distance in terms of errors. 
+
+
+## [2026-05-26 3:23 PM – 4:49 PM] - RF + Ridge Regression Ensemble Approach
+- **Action:** Built the approach in `reznar/analysis.ipynb` using RF regressor + Ridge regressor and trained with `RepeatedStratifiedKFold` for OOF predictions. To handle the imbalance, model's internal weighting is used with weights of `1/N`.
+- **Action:** Evaluated both with ordinal aware metrics on the OOF predictions: macro-MAE, Spearman correlation, Quadratic Weighted Kappa (QWK), and ±1-accuracy (predictions off-by-1 is considered true).
+- **Action:** Added VIF (Variance Inflation Factor) filtering which iteratively drops the feature with the highest VIF until all remaining features have VIF < 5.
+- **Thought Process**:
+  - Framing it as regression instead of classification preserves the distance of errors, so predictions that is off-by-3 is penalized more than the ones that is off-by-1. Also, we get a continuous score to rank by.
+  - Using two architecturally different model reduces both the bias and variance of the prediction that might occur due to the noisy label. So if both model agree on the prediction, it is more trustworthy than either alone.
+  - Since we are focusing more on the predictive power and not inference, the assumptions check Ridge Regression are relaxed and we focus more on robust validation for generalization. 
+  - To make sure we preserve the sense of distance in errors, I used ordinal aware metrics like MAE, Spearman correlation, and Quadratic Weighted Kappa (QWK). They penalize errors that are further more and errors that are closer less. ±1-accuracy is also used to get a better sense how far off the predictions are, in this case, we assume errors within a level are true. If the ±1-accuracy is low, that means the model predictions are spread widely across rarities, which could be an indicator that the model fails to capture the pattern. However, if it is high, it could mean that the items that are predicted more than a level off is the outlier items that don't belong in their rarity tier.
+  - Spearman correlation metric is used here to check if the model gets the ranking right without relying on the raw prediction values. Since we frame this as regression problem, we get continuous output instead of integers. Thus, relying on the raw prediction values or rounding them instead could introduce more bias. 
+  - Also, since we are using Ridge Regression, VIF filtering is added after correlation filtering to have more robust multicollinearity handling.
+- **Findings**:
+  - Both models seem to have real signal. The Ridge Regression and RF model perform similarly on every metric (macro-MAE 0.695 vs 0.743, Spearman +0.531 vs +0.560, QWK 0.553 vs 0.550, ±1-acc 0.924 vs 0.949).
+  - RF prediction range is compressed to [0.39, 3.28], which means it cannot reach `legendary` (3) or `artifact` (4). While Ridge prediction range is [0.40, 5.45] that can reach the top but over extrapolate over the max of 4.
+  - The two "drawbacks" seems to complement each other. The RF smooths the tails down while the Ridge extrapolates them up. Thus, averaging them together gives a middle estimate that's reasonable in the bulk (`rare` and `very_rare`) but noisy at the extremes (`uncommon`, `legendary`, and `artifact`).
+  - This prediction is fundamentally limited by data itself, where we have 9 legendary and 4 artifact items, which is not enough to learn a sharp boundary at the edges regardless of the model. 
