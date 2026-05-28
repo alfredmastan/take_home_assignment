@@ -169,3 +169,17 @@ Noticed 2 major problems in the parsed JSON after a couple of runs and manually 
   - The effect on RF-clf was quite significant. It went from looking like the weakest model to one of the strongest. Its macro-MAE dropped from ~0.81 to ~0.55, which is the best across other models. Its per-class signed residual and mean prediction also improved and is even comparable with the Ordinal LR.
   - This shifted my focus back towards the classification framing instead of the regression. Despite of them not having the sense of distance in terms of errors, the spearman metric from the RF classification model tells another story. While it is not as good as the OLR or RF regression, it is still comparable and it shows that it is able to capture the "order" as well as the others. 
 
+
+
+## [2026-05-28 9:42 AM - 10:44 AM] - Final Model - Ensemble RF Regression + OLR
+- **Action**: Committed to the regression framing and built the final RF-reg + OLR ensemble with simple unweighted mean of their OOF scores.
+- **Action**: Ran error analysis across the three regression models (RF-reg, Ridge, OLR) using Pearson correlation on both their predictions and their residuals. then re-ran the ensemble through the identical OOF harness and metrics.
+- **Thought Process**:
+  - Despite having good macro-MAE and QWK metrics, RF Classification lacks in ±1-acc and how well it can rank. Low ±1-acc means there's more spread in the predictions across class, and since our labeling is noisy, it could just be an overfit and it capture the noise instead of signal. It is also shown in the per-class signed residual and prediction mean, where the artifact class is predicted perfectly. This raises my suspicion, especially when the artifact tier only have 4 items in it.
+  - Furthermore, since we are going to use it for anomaly detection, we still want the fine gradient to rank on instead of the hard integer labels that classification gives us. Only the regression models can provide a continuous score to rank anomaly severity in a more finer way.
+  - The error analysis step is to decide which models genuinely add diversity. Averaging two models that make the same errors would not be beneficial, so the residual correlation matters more than the prediction correlation. Like mentioned before, the point of the ensemble is that two diverse architectures agreeing on a disagreement is stronger evidence of a real anomaly than either model alone.
+- **Findings**:
+  - As expected, Ridge and OLR are the most correlated pair on both views (predictions r=0.94, residuals r=0.92). In essence, they are both linear model and have similar architecture, thus, keeping both of them is redundant. 
+  - Decided to drop Ridge and kept OLR. OLR wins on QWK (0.603 vs 0.553), Spearman (0.563 vs 0.531), and reaches further into the tails. Furthermore, the OLR gives advantage of natively handling ordinal target instead of just regressing through it. Hence, the final ensemble pairs are RF-reg with OLR.
+  - The ensemble improves exactly where it matters. It achieves Spearman 0.595 (best of any model) and ±1-acc 0.962 (ties best). QWK is unchanged (0.600), and macro-MAE dips slightly (0.679 vs 0.650) since averaging pulls the extremes toward the middle, so the tails lose a little reach. That same smoothing also balances the per-class bias, where at every tier of the ensemble's signed residual sits between its two models.
+  - From here, we can use the ensemble to do both prediction and anomaly detection in finding which items do not belong in their rarity tier.
