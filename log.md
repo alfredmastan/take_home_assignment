@@ -144,7 +144,7 @@ Noticed 2 major problems in the parsed JSON after a couple of runs and manually 
   - This prediction is fundamentally limited by data itself, where we have 9 legendary and 4 artifact items, which is not enough to learn a sharp boundary at the edges regardless of the model. 
 
 
-## [2026-05-27 9:50 AM – 1:38 PM] - Model Comparison Across Framings
+## [2026-05-27 9:50 AM – 1:38 PM] - Model Comparison and Validation Across Framings
 - **Action:** Added ordinal LR (`mord.LogisticAT`) as a quick sanity check and third opinion alongside the RF classifier and RF + Ridge regressors.
 - **Action:** Compared all framings against a mean baseline under `RepeatedStratifiedKFold` of 4×5 (4 fold repeated 5x) and weighting to handle imbalance, which then scored with ordinal-aware metrics (macro-MAE, QWK, Spearman, ±1-acc).
 - **Action:** Ran an in-depth per-class diagnostic with signed residual (pred − true) and mean prediction per class to expose each model's directional bias and how well it handle the imbalance.
@@ -158,3 +158,14 @@ Noticed 2 major problems in the parsed JSON after a couple of runs and manually 
   - RF classification seems to underperform against every other models across all metrics. The per-class mean prediction reveals that the model struggle to cover lower and upper tiers like uncommon, legendary, and artifact. The signed residual also reveals that the predictions for those minority tiers are being biased towards the majority tiers (rare and very rare). 
   - On the other hand, the OLR performs as good as the other regression models despite using expected value for its metrics. The per-class signed residual and mean prediction reveals that it is quite confident in the predictions, covers a good range, and handle the imbalances quite well. It performs similarly to the ridge regression model, it handled the top rarities (legendary and artifact) predictions quite well, but underperform in the lower rarity (uncommon) range.
   - However, RF regression model is the complete opposite from OLR and Ridge. It underperformed in top rarities predictions and handled the lower rarity predictions better. We can see it from the uncommon rarity mean prediction and signed residual that it reaches lower value in average compared to OLR and Ridge, and struggles to reach the artifact rarity. This relates to the previous test where the prediction range is compressed to [0.39, 3.28], indicating it is struggling in predicting the top range of rarities. Despite that, the metrics shows that it is comparable with the OLR and Ridge models. Hence, the OLR, Ridge, and RF regression models are the most reasonable models to ensemble together as they complement each other weaknesses.
+
+
+## [2026-05-27 11:05 PM - 2026-05-28 1:34 AM] - Replaced Expected-Value Scoring with Hard Predictions and Reran Validation
+- **Action**: Dropped the expected-value scoring for the classification and ordinal models and simplified `oof_predict` so every model is now evaluated by its own hard `.predict()` output.
+- **Thought Process**:
+  - Expected value was originally used only to make probability based models on a continuous scale, making it comparable to the regression models. However as mentioned previously, expected value introduces bias and it pulls the predictions toward the center, so it might not represent how well the model actually performs. This bias is unnecessary when what we want is raw predictive power.
+  - The one caveat is that classification models output integer predictions, which can look artificially strong on a metric like MAE (which is why MAE is not the standard metric in evaluation classification model). However, this is reasonable in our case as we are also looking at different metrics to see the bigger picture.
+- **Findings**:
+  - The effect on RF-clf was quite significant. It went from looking like the weakest model to one of the strongest. Its macro-MAE dropped from ~0.81 to ~0.55, which is the best across other models. Its per-class signed residual and mean prediction also improved and is even comparable with the Ordinal LR.
+  - This shifted my focus back towards the classification framing instead of the regression. Despite of them not having the sense of distance in terms of errors, the spearman metric from the RF classification model tells another story. While it is not as good as the OLR or RF regression, it is still comparable and it shows that it is able to capture the "order" as well as the others. 
+
