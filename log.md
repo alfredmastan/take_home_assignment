@@ -183,3 +183,21 @@ Noticed 2 major problems in the parsed JSON after a couple of runs and manually 
   - Decided to drop Ridge and kept OLR. OLR wins on QWK (0.603 vs 0.553), Spearman (0.563 vs 0.531), and reaches further into the tails. Furthermore, the OLR gives advantage of natively handling ordinal target instead of just regressing through it. Hence, the final ensemble pairs are RF-reg with OLR.
   - The ensemble improves exactly where it matters. It achieves Spearman 0.595 (best of any model) and ±1-acc 0.962 (ties best). QWK is unchanged (0.600), and macro-MAE dips slightly (0.679 vs 0.650) since averaging pulls the extremes toward the middle, so the tails lose a little reach. That same smoothing also balances the per-class bias, where at every tier of the ensemble's signed residual sits between its two models.
   - From here, we can use the ensemble to do both prediction and anomaly detection in finding which items do not belong in their rarity tier.
+
+## [2026-05-28 11:11 AM – 12:13 PM] - Refined Prompt for Special Effects, Drawbacks, and Charges
+- **Action**: Refined extraction prompt in `reznar/extract.py` and field descriptions in `reznar/ontology.py` to fix inconsistent `special_effects` and `drawbacks` extraction.
+- **Thought Process**:
+  - `special_effects` length is highly correlated with rarity, which doesn't mean the one that is the most significant in making predictions. However, it is still important to keep them clean as much as possible. Thep previous prompt gives inconsistent details that contains duplicates, over-splitting, over-merging which adds more noise.
+  - Thus, after a couple of runs and iterations of prompt, it was able to structure them more clearly and slightly increases the prediction power across models.
+
+
+## [2026-05-28 6:20 PM – 7:20 PM] - Detecting Anomalies
+- **Action**: Built the anomaly detection step in `reznar/analysis.ipynb` on top of the RF-reg + OLR ensemble. Scored every item with the ensemble OOF prediction, rounded it to the nearest tier, computed `off_by = predicted_tier - actual_tier`, and flagged items with `|off_by| >= 2` as anomalies.
+- **Thought Process**:
+  - The continuous ensemble score is exactly what makes this more refined. Rounding it gives a predicted tier to compare against the label, while the underlying score preserves the fine gradient to rank severity by.
+  - Abusing the model high ±1-accuracy, I flagged the items that are two or more tiers off than the predictions, which means that the model "truly" disagree with the assigned rarity. A model with high ±1-accuracy would not predict it more than two tiers off if the item really belongs in the rarity tier.
+  - However, this ensemble produces a list of suspects, not a conclusion. There is always some biased involved no matter what, hence, the final call on whether an item is mislabeled, genuinely unusual, or a model miss is left to human review against the source listing.
+- **Findings**:
+  - Two items cross the threshold, both under-rated by two tiers:
+    - **Universal Scroll** (`legendary`, predicted `rare`): repeatable but fixed single-spell utility with no new capability, closer to `rare` than legendary.
+    - **Horn of Bronze Dragon Control** (`very_rare`, predicted `uncommon`): one narrow effect against a single creature type with no combat bonus or attunement.

@@ -277,7 +277,15 @@ class Limitations(_Base):
     cursed: bool = False
     drawbacks: list[str] = Field(
         default=[],
-        description="Penalties not captured by cursed/charges, as short phrases (e.g. 'reduces Strength by 2 while worn', 'causes blindness in sunlight').",
+        description=(
+            "Penalties not captured by cursed/charges, as short phrases — ONE entry per "
+            "distinct drawback (e.g. 'reduces Strength by 2 while worn', 'causes blindness in "
+            "sunlight'). Do not restate the cursed flag or the charge count. Collapse a single "
+            "penalty whose form varies by a selectable parameter into one entry. "
+            "Only record a drawback explicitly stated in the description — never infer or "
+            "invent one. Most items have no drawback; an empty list is the correct, expected "
+            "output, so do not pad the field to make an item look costlier than it is."
+        ),
     )
 
 
@@ -295,7 +303,24 @@ class Item(_Base):
 
     special_effects: list[str] = Field(
         default=[],
-        description="Effects not captured by offense/defense/environment/limitations, as short phrases (e.g. 'grants darkvision 60 ft', 'casts Misty Step once per day').",
+        description=(
+            "The item's DISTINCT effects, as short phrases — ONE entry per genuinely different "
+            "thing the item does (e.g. 'grants darkvision 60 ft', 'casts Misty Step'). "
+            "FOLD an effect's own parameters into its single entry: range/area, save DC, "
+            "duration, and magnitude scaling (a resist save that scales +0/+2/+3 by enemy tier "
+            "stays inside that one effect). "
+            "SPLIT genuinely different effects into separate entries — including a selector that "
+            "switches between different MECHANICS (a potion granting a different effect per moon "
+            "phase — stat bonus, invisibility, or necrotic damage — is one entry per phase). But "
+            "a selector that only tunes the flavor/magnitude of ONE mechanic is ONE entry "
+            "(gemstone color → which emotion is amplified). Litmus: different mechanics → split; "
+            "same mechanic, different magnitude/flavor → fold. "
+            "Do NOT put usage limits here — number of uses / per-rest counts belong in "
+            "limitations.charges, recharge/cooldown timing in limitations.drawbacks. "
+            "Never restate anything already encoded in another field: AC or attack bonuses, "
+            "damage_resistances, condition_immunities, resistances_against, charges, cursed, "
+            "slot, form, or attunement."
+        ),
     )
 
 
